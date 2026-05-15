@@ -14,9 +14,10 @@ import java.util.List;
                 @Index(name = "idx_user_email", columnList = "email", unique = true)
         }
 )
-@Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseAuditEntity {

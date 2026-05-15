@@ -3,7 +3,6 @@ package com.meet.server.common.exception;
 import com.meet.server.common.api.ApiResponse;
 import com.meet.server.features.auth.exception.AuthException;
 import com.meet.server.features.auth.exception.InvalidTokenException;
-import com.meet.server.features.user.exception.UserException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,13 +57,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error(ex.getMessage()));
     }
-
-    @ExceptionHandler(UserException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUserException(UserException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ex.getMessage()));
-    }
-
+    
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)

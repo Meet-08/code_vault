@@ -17,7 +17,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class UnauthorizedResponseHandler implements AuthenticationEntryPoint {
 
-    private final JsonMapper jsoMapper;
+    private final JsonMapper jsonMapper;
 
     @Override
     public void commence(
@@ -27,7 +27,7 @@ public class UnauthorizedResponseHandler implements AuthenticationEntryPoint {
     ) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(jsoMapper.writeValueAsString(
+        response.getWriter().write(jsonMapper.writeValueAsString(
                 ApiResponse.error("Unauthorized")
         ));
     }
