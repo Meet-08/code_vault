@@ -23,7 +23,7 @@ public class MailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
-    @Value("${spring.mail.from:noreply@springref.com}")
+    @Value("${spring.mail.from:noreply@code_vault.com}")
     private String fromEmail;
 
     @Async("mailExecutor")
@@ -67,6 +67,6 @@ public class MailService {
         Map<String, Object> variables = Map.of(
                 "name", name
         );
-        sendHtmlEmail(to, "Welcome to SpringRef!", "welcome-email", variables);
+        sendHtmlEmail(to, "Welcome to code_vault!", "welcome-email", variables);
     }
 }

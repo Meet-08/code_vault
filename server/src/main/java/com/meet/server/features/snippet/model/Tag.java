@@ -15,6 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(exclude = "snippets")
 public class Tag extends BaseAuditEntity {
 
     @Id
@@ -32,11 +33,17 @@ public class Tag extends BaseAuditEntity {
     )
     private Set<Snippet> snippets = new HashSet<>();
 
-    private void addSnippet(Snippet snippet) {
+    public Tag(String name) {
+        this.name = name;
+    }
+
+    public void addSnippet(Snippet snippet) {
+        snippets.add(snippet);
         snippet.getTags().add(this);
     }
 
     private void removeSnippet(Snippet snippet) {
+        snippets.remove(snippet);
         snippet.getTags().remove(this);
     }
 }

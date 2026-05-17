@@ -20,6 +20,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "password")
 public class User extends BaseAuditEntity {
 
     @Id

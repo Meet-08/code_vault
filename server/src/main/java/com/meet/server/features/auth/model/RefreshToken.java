@@ -11,7 +11,9 @@ import java.time.Instant;
 @Table(name = "refresh_tokens", indexes = {
         @Index(name = "idx_refresh_token_user", columnList = "user_id")
 })
-@Data
+@Getter
+@Setter
+@ToString(exclude = "user")
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor

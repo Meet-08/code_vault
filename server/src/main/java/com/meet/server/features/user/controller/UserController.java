@@ -2,7 +2,6 @@ package com.meet.server.features.user.controller;
 
 import com.meet.server.common.api.ApiResponse;
 import com.meet.server.features.user.dto.request.AssignRolesRequest;
-import com.meet.server.features.user.dto.request.UpdateProfileRequest;
 import com.meet.server.features.user.dto.response.UserResponse;
 import com.meet.server.features.user.service.UserService;
 import jakarta.validation.Valid;
@@ -20,11 +19,6 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> me() {
         return ResponseEntity.ok(ApiResponse.ok("Current user fetched successfully", userService.getCurrentUser()));
-    }
-
-    @PatchMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> updateProfile(@RequestBody @Valid UpdateProfileRequest request) {
-        return ResponseEntity.ok(ApiResponse.ok("Profile updated successfully", userService.updateProfile(request)));
     }
 
     @DeleteMapping("/{id}")

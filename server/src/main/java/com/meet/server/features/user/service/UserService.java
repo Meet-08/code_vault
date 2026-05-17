@@ -2,7 +2,6 @@ package com.meet.server.features.user.service;
 
 import com.meet.server.common.util.SecurityUtils;
 import com.meet.server.features.user.dto.request.AssignRolesRequest;
-import com.meet.server.features.user.dto.request.UpdateProfileRequest;
 import com.meet.server.features.user.dto.response.UserResponse;
 import com.meet.server.features.user.enums.UserRole;
 import com.meet.server.features.user.exception.UserException;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,27 +45,7 @@ public class UserService {
     }
 
     public UserResponse getCurrentUser() {
-        String email = SecurityUtils.getCurrentUserEmail();
-        return toResponse(getByEmail(email));
-    }
-
-    @Transactional
-    public UserResponse updateProfile(UpdateProfileRequest request) {
-        User user = getByEmail(SecurityUtils.getCurrentUserEmail());
-
-        if (request.name() != null && !request.name().isBlank()) {
-            user.setName(request.name().trim());
-        }
-
-        if (request.email() != null && !request.email().isBlank()) {
-            String nextEmail = request.email().trim();
-            if (!nextEmail.equals(user.getEmail()) && userRepository.existsByEmail(nextEmail)) {
-                throw new UserException("Email already in use");
-            }
-            user.setEmail(nextEmail);
-        }
-
-        return toResponse(userRepository.save(user));
+        return toResponse(Objects.requireNonNull(SecurityUtils.getCurrentUser()));
     }
 
     public void updatePassword(String email, String newPassword) {
