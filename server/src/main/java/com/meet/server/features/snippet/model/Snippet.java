@@ -24,7 +24,10 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(
+        callSuper = true,
+        exclude = {"createdBy", "collections", "tags"}
+)
 @ToString(exclude = {"createdBy", "collections", "tags"})
 public class Snippet extends BaseAuditEntity {
 

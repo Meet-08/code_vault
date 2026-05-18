@@ -30,6 +30,10 @@ public class SnippetService {
 
     @Transactional
     public SnippetDto createSnippet(CreateSnippetRequest request, User user) {
+        log.debug("Create snippet request: title: {} desc : {}",
+                request.title(),
+                request.description()
+        );
         Set<Tag> tags = request.tags()
                 .stream()
                 .map(tagService::findOrCreate)
@@ -40,6 +44,12 @@ public class SnippetService {
         tags.forEach(snippet::addTag);
 
         snippetRepository.save(snippet);
+
+        log.debug(
+                "Snippet created: id={}, title={}",
+                snippet.getId(),
+                snippet.getTitle()
+        );
         return SnippetMapper.toDto(snippet);
     }
 
@@ -47,6 +57,7 @@ public class SnippetService {
             SnippetFilterRequest request,
             Pageable pageable
     ) {
+        log.debug("Get snippets request: {}", request);
         var spec = Specification.allOf(
                 SnippetSpecification.isNotDeleted(),
                 Specification.anyOf(
@@ -55,8 +66,8 @@ public class SnippetService {
                         SnippetSpecification.hasTags(request.tags())
                 )
         );
-
         var page = snippetRepository.findAll(spec, pageable);
+        log.debug("Snippets found: {}", page);
         return new PageResponse<>(
                 page.getContent().stream().map(SnippetMapper::toDto).toList(),
                 page.getNumber(),

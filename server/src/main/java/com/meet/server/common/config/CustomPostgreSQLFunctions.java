@@ -25,7 +25,7 @@ public class CustomPostgreSQLFunctions
                 registry,
                 "fts_match",
                 FunctionKind.NORMAL,
-                "?1 @@ plainto_tsquery('english', ?2)"
+                "cast(?1 as tsvector) @@ plainto_tsquery('english', ?2)"
         )
                 .setExactArgumentCount(2)
                 .setInvariantType(

@@ -2,6 +2,7 @@ spring:
   application:
     name: server
 
+
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
@@ -42,3 +43,7 @@ app:
   cors:
     allowed-origins: http://localhost:3000,http://localhost:5000
   env: ${APP_ENV:dev}
+  
+logging:
+  level:
+    com.meet.server: ${LOG_LEVEL:DEBUG}

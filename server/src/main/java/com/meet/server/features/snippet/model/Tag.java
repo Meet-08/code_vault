@@ -14,7 +14,10 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(
+        callSuper = true,
+        exclude = {"snippets"}
+)
 @ToString(exclude = "snippets")
 public class Tag extends BaseAuditEntity {
 
