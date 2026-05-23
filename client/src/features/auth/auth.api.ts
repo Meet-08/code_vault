@@ -19,7 +19,7 @@ export const refreshToken = async () => {
 };
 
 export const getCurrentUser = async () => {
-	const res = await api.get<ApiResponse<User>>("/user/me");
+	const res = await api.get<ApiResponse<User>>("/users/me");
 	return unwrap(res.data);
 };
 

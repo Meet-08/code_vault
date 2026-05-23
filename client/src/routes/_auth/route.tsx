@@ -1,12 +1,33 @@
-import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
+import { Loader } from "#/components/ui/loader";
+import { useCurrentUser } from "#/features/auth/auth.query";
+import {
+	createFileRoute,
+	Navigate,
+	Outlet,
+	useLocation,
+} from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_auth")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
+	const { data: user, isLoading } = useCurrentUser();
 	const pathName = useLocation({ select: (l) => l.pathname });
 	const isRegister = pathName === "/register";
+
+	if (isLoading) {
+		return (
+			<div className="auth-shell flex min-h-dvh items-center justify-center px-6">
+				<Loader />
+			</div>
+		);
+	}
+
+	if (user) {
+		return <Navigate to="/" />;
+	}
+
 	return (
 		<div className="auth-shell">
 			<div
@@ -14,11 +35,11 @@ function RouteComponent() {
 			>
 				<section className="auth-panel hidden lg:flex lg:w-[46%]">
 					<div className="auth-visual-card auth-page-enter">
-						<div className="mx-auto flex w-full max-w-[360px] flex-col items-center text-center">
+						<div className="mx-auto flex w-full max-w-90 flex-col items-center text-center">
 							<img
 								src="/logo.png"
 								alt="Code Vault"
-								className="w-full max-w-[280px] drop-shadow-[0_24px_40px_rgba(0,0,0,0.45)]"
+								className="w-full max-w-70 drop-shadow-[0_24px_40px_rgba(0,0,0,0.45)]"
 							/>
 							<div className="mt-8 space-y-4">
 								<p className="text-xs uppercase tracking-[0.34em] text-text-muted">

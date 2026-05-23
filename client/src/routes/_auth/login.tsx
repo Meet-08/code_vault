@@ -1,6 +1,3 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
-
 import { Button } from "#/components/ui/button";
 import {
 	Card,
@@ -19,18 +16,47 @@ import {
 	FormMessage,
 } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
+import { useLogin } from "#/features/auth/auth.query";
+import { loginSchema, type LoginData } from "#/features/auth/auth.schema";
+import { getContext } from "#/integrations/tanstack-query/root-provider";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import type { AxiosError } from "axios";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import type { ApiResponse } from "../../..";
 
 export const Route = createFileRoute("/_auth/login")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const form = useForm({
+	const { queryClient } = getContext();
+	const navigate = useNavigate();
+	const loginMutation = useLogin(queryClient);
+	const form = useForm<LoginData>({
+		resolver: zodResolver(loginSchema),
 		defaultValues: {
 			email: "",
 			password: "",
 		},
 	});
+
+	const onSubmit = async (data: LoginData) => {
+		await toast.promise(loginMutation.mutateAsync(data), {
+			pending: "Logging in...",
+			success: "Welcome back",
+			error: {
+				render({ data }) {
+					const error = data as AxiosError<ApiResponse>;
+
+					return error.response?.data?.message || "Login failed";
+				},
+			},
+		});
+
+		navigate({ to: "/" });
+	};
 
 	return (
 		<Card className="overflow-hidden border-border-base/80 bg-[linear-gradient(180deg,rgba(17,19,24,0.98),rgba(14,16,20,0.98))] shadow-[0_24px_70px_rgba(0,0,0,0.35)]">
@@ -50,7 +76,7 @@ function RouteComponent() {
 				<Form {...form}>
 					<form
 						className="auth-field-grid"
-						onSubmit={form.handleSubmit(() => undefined)}
+						onSubmit={form.handleSubmit(onSubmit)}
 					>
 						<FormField
 							control={form.control}

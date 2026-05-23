@@ -19,7 +19,7 @@ public class CookieUtil {
                 .httpOnly(true)
                 .secure(AppConfig.COOKIE_SECURE)
                 .sameSite("Lax")
-                .path("/api/auth")
+                .path("/")
                 .maxAge(maxAgeSeconds)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -30,7 +30,7 @@ public class CookieUtil {
                 .httpOnly(true)
                 .secure(AppConfig.COOKIE_SECURE)
                 .sameSite("Lax")
-                .path("/api/auth")
+                .path("/")
                 .maxAge(0)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

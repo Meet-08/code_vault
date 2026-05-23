@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 
 import { Button } from "#/components/ui/button";
@@ -19,19 +19,45 @@ import {
 	FormMessage,
 } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
+import { useRegister } from "#/features/auth/auth.query";
+import { registerSchema, type RegisterData } from "#/features/auth/auth.schema";
+import { getContext } from "#/integrations/tanstack-query/root-provider";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { AxiosError } from "axios";
+import { toast } from "react-toastify";
+import type { ApiResponse } from "../../..";
 
 export const Route = createFileRoute("/_auth/register")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const form = useForm({
+	const { queryClient } = getContext();
+	const navigate = useNavigate();
+	const registerMutation = useRegister(queryClient);
+	const form = useForm<RegisterData>({
+		resolver: zodResolver(registerSchema),
 		defaultValues: {
 			name: "",
 			email: "",
 			password: "",
 		},
 	});
+
+	const onSubmit = async (data: RegisterData) => {
+		await toast.promise(registerMutation.mutateAsync(data), {
+			pending: "Creating your account...",
+			success: "Account created successfully",
+			error: {
+				render({ data }) {
+					const error = data as AxiosError<ApiResponse>;
+
+					return error.response?.data?.message || "Registration failed";
+				},
+			},
+		});
+		navigate({ to: "/" });
+	};
 
 	return (
 		<Card className="overflow-hidden border-border-base/80 bg-[linear-gradient(180deg,rgba(17,19,24,0.98),rgba(14,16,20,0.98))] shadow-[0_24px_70px_rgba(0,0,0,0.35)]">
@@ -51,7 +77,7 @@ function RouteComponent() {
 				<Form {...form}>
 					<form
 						className="auth-field-grid"
-						onSubmit={form.handleSubmit(() => undefined)}
+						onSubmit={form.handleSubmit(onSubmit)}
 					>
 						<FormField
 							control={form.control}
