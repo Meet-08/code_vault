@@ -36,9 +36,9 @@ public record CreateSnippetRequest(
         @UniqueElements
         List<
                 @NotBlank
-                @Length(min = 2, max = 10)
+                @Length(min = 2, max = 30)
                 @Pattern(
-                        regexp = "^[a-zA-Z0-9_-]+$",
+                        regexp = "^[a-zA-Z0-9_\\- ]+$",
                         message = "Invalid tag format"
                 )
                         String
