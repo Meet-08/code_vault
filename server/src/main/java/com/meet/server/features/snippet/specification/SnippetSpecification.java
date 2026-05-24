@@ -2,11 +2,14 @@ package com.meet.server.features.snippet.specification;
 
 import com.meet.server.features.snippet.model.Snippet;
 import com.meet.server.features.snippet.model.Tag;
+import com.meet.server.features.user.model.User;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class SnippetSpecification {
 
@@ -15,16 +18,26 @@ public class SnippetSpecification {
                 criteriaBuilder.isFalse(root.get("isDeleted"));
     }
 
-    public static Specification<Snippet> containsQuery(String q) {
-        return (root, query, criteriaBuilder) -> {
-            if (q == null || q.isBlank()) return null;
+    public static Specification<Snippet> hasUser(User user) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("createdBy"), user);
+    }
 
-            return criteriaBuilder.isTrue(
-                    criteriaBuilder.function(
+    public static Specification<Snippet> containsQuery(String q) {
+        return (root, query, cb) -> {
+            if (q == null || q.isBlank())
+                return null;
+
+            String tsQuery = Arrays.stream(q.trim().split("\\s+"))
+                    .map(term -> term + ":*")
+                    .collect(Collectors.joining(" & "));
+
+            return cb.isTrue(
+                    cb.function(
                             "fts_match",
                             Boolean.class,
                             root.get("searchVector"),
-                            criteriaBuilder.literal(q)
+                            cb.literal(tsQuery)
                     )
             );
         };

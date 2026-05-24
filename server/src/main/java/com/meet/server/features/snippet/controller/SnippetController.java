@@ -28,6 +28,7 @@ public class SnippetController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<SnippetDto>>> getSnippets(
             @ModelAttribute SnippetFilterRequest filterRequest,
+            @AuthenticationPrincipal CustomUserPrincipal principal,
             @PageableDefault(
                     sort = "createdAt",
                     direction = Sort.Direction.DESC
@@ -35,7 +36,10 @@ public class SnippetController {
             Pageable pageable
     ) {
         return ResponseEntity.ok(
-                ApiResponse.ok("Snippets fetched successfully", snippetService.getSnippets(filterRequest, pageable))
+                ApiResponse.ok(
+                        "Snippets fetched successfully",
+                        snippetService.getSnippets(filterRequest, principal.user(), pageable)
+                )
         );
     }
 

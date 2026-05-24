@@ -55,11 +55,13 @@ public class SnippetService {
 
     public PageResponse<SnippetDto> getSnippets(
             SnippetFilterRequest request,
+            User user,
             Pageable pageable
     ) {
         log.debug("Get snippets request: {}", request);
         var spec = Specification.allOf(
                 SnippetSpecification.isNotDeleted(),
+                SnippetSpecification.hasUser(user),
                 Specification.anyOf(
                         SnippetSpecification.containsQuery(request.q()),
                         SnippetSpecification.hasLanguage(request.language()),
@@ -67,7 +69,8 @@ public class SnippetService {
                 )
         );
         var page = snippetRepository.findAll(spec, pageable);
-        log.debug("Snippets found: {}", page);
+        log.debug("Snippets found: {}", page.getNumberOfElements());
+        
         return new PageResponse<>(
                 page.getContent().stream().map(SnippetMapper::toDto).toList(),
                 page.getNumber(),

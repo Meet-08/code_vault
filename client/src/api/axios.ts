@@ -9,9 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const api = axios.create({
 	baseURL: API_BASE_URL,
-
 	withCredentials: true,
-
 	headers: {
 		"Content-Type": "application/json",
 	},
@@ -32,13 +30,11 @@ function processQueue(error: unknown, token: string | null) {
 			p.resolve(token);
 		}
 	});
-
 	failedQueue = [];
 }
 
 api.interceptors.request.use((config) => {
 	const token = tokenStorage.getAccessToken();
-
 	if (token) {
 		config.headers.Authorization = `Bearer ${token}`;
 	}
@@ -48,14 +44,11 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
 	(response) => response,
-
 	async (error) => {
 		const original = error.config;
 
 		const isServer = typeof window === "undefined";
 
-		// SSR requests should NOT attempt
-		// browser-style refresh flow.
 		if (isServer) {
 			return Promise.reject(error);
 		}
@@ -79,13 +72,11 @@ api.interceptors.response.use(
 				});
 			}).then((token) => {
 				original.headers.Authorization = `Bearer ${token}`;
-
 				return api(original);
 			});
 		}
 
 		original._retry = true;
-
 		isRefreshing = true;
 
 		try {

@@ -55,7 +55,7 @@ public class Snippet extends BaseAuditEntity {
     )
     private String searchVector;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "created_by_id",
             foreignKey = @ForeignKey(name = "fk_snippet_created_by")
