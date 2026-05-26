@@ -3,7 +3,10 @@ package com.meet.server.common.exception;
 import com.meet.server.common.api.ApiResponse;
 import com.meet.server.features.auth.exception.AuthException;
 import com.meet.server.features.auth.exception.InvalidTokenException;
+import com.meet.server.features.snippet.exception.SnippetException;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -19,6 +22,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationException(
@@ -57,7 +62,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error(ex.getMessage()));
     }
-    
+
+    @ExceptionHandler(SnippetException.class)
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleSnippetException(SnippetException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity.status(ex.getStatus())
+                .body(ApiResponse.error(ex.getMessage(), Map.of("Status", ex.getStatus().toString())));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)

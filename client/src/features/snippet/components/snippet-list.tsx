@@ -1,6 +1,7 @@
 import { Card } from "#/components/ui/card";
 import { SnippetCard } from "#/features/snippet/components/snippet-card";
 import type { SnippetList } from "#/features/snippet/snippet.type";
+import { Link } from "@tanstack/react-router";
 
 interface SnippetListProps {
 	snippets: SnippetList[];
@@ -16,9 +17,16 @@ function SnippetListView({ snippets }: SnippetListProps) {
 	}
 
 	return (
-		<div className="snippet-grid">
+		<div className="snippet-grid items-stretch auto-rows-[1fr]">
 			{snippets.map((snippet) => (
-				<SnippetCard key={snippet.id} snippet={snippet} />
+				<Link
+					key={snippet.id}
+					to="/snippets/$id"
+					params={{ id: snippet.id.toString() }}
+					className="flex h-full"
+				>
+					<SnippetCard snippet={snippet} />
+				</Link>
 			))}
 		</div>
 	);

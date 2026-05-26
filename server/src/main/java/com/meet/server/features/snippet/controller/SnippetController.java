@@ -4,6 +4,7 @@ import com.meet.server.common.api.ApiResponse;
 import com.meet.server.common.api.PageResponse;
 import com.meet.server.common.security.user.CustomUserPrincipal;
 import com.meet.server.features.snippet.dto.CreateSnippetRequest;
+import com.meet.server.features.snippet.dto.SnippetDetailResponse;
 import com.meet.server.features.snippet.dto.SnippetDto;
 import com.meet.server.features.snippet.dto.SnippetFilterRequest;
 import com.meet.server.features.snippet.service.SnippetService;
@@ -24,6 +25,17 @@ import java.net.URI;
 public class SnippetController {
 
     private final SnippetService snippetService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<SnippetDetailResponse>> getSnippet(
+            @PathVariable String id,
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        var snippet = snippetService.getSnippet(Long.parseLong(id), principal.user());
+        return ResponseEntity.ok(
+                ApiResponse.ok("Snippet Fetched Successfully", snippet)
+        );
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<SnippetDto>>> getSnippets(

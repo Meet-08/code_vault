@@ -2,8 +2,10 @@ package com.meet.server.features.snippet.service;
 
 import com.meet.server.common.api.PageResponse;
 import com.meet.server.features.snippet.dto.CreateSnippetRequest;
+import com.meet.server.features.snippet.dto.SnippetDetailResponse;
 import com.meet.server.features.snippet.dto.SnippetDto;
 import com.meet.server.features.snippet.dto.SnippetFilterRequest;
+import com.meet.server.features.snippet.exception.SnippetException;
 import com.meet.server.features.snippet.mapper.SnippetMapper;
 import com.meet.server.features.snippet.model.Tag;
 import com.meet.server.features.snippet.repository.SnippetRepository;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +49,7 @@ public class SnippetService {
         snippetRepository.save(snippet);
 
         log.debug(
-                "Snippet created: id={}, title={}",
-                snippet.getId(),
+                "Snippet created: title={}",
                 snippet.getTitle()
         );
         return SnippetMapper.toDto(snippet);
@@ -70,7 +72,7 @@ public class SnippetService {
         );
         var page = snippetRepository.findAll(spec, pageable);
         log.debug("Snippets found: {}", page.getNumberOfElements());
-        
+
         return new PageResponse<>(
                 page.getContent().stream().map(SnippetMapper::toDto).toList(),
                 page.getNumber(),
@@ -79,5 +81,19 @@ public class SnippetService {
                 page.getTotalPages(),
                 page.isLast()
         );
+    }
+
+    public SnippetDetailResponse getSnippet(Long snippetId, User user) {
+        log.debug("Get snippet response: {}", snippetId);
+        var snippet = snippetRepository
+                .findByIdAndCreatedBy(snippetId, user)
+                .orElseThrow(
+                        () -> new SnippetException("Snippet not found", HttpStatus.NOT_FOUND)
+                );
+
+        if (snippet.isDeleted())
+            throw new SnippetException("Snippet has been deleted", HttpStatus.FORBIDDEN);
+
+        return SnippetMapper.toDetailsDto(snippet);
     }
 }

@@ -13,6 +13,7 @@ import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SnippetsNewRouteImport } from './routes/snippets/new'
+import { Route as SnippetsIdRouteImport } from './routes/snippets/$id'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AppSnippetsRouteImport } from './routes/_app/snippets'
@@ -35,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
 const SnippetsNewRoute = SnippetsNewRouteImport.update({
   id: '/snippets/new',
   path: '/snippets/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SnippetsIdRoute = SnippetsIdRouteImport.update({
+  id: '/snippets/$id',
+  path: '/snippets/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/snippets': typeof AppSnippetsRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/snippets/$id': typeof SnippetsIdRoute
   '/snippets/new': typeof SnippetsNewRoute
 }
 export interface FileRoutesByTo {
@@ -79,6 +86,7 @@ export interface FileRoutesByTo {
   '/snippets': typeof AppSnippetsRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/snippets/$id': typeof SnippetsIdRoute
   '/snippets/new': typeof SnippetsNewRoute
 }
 export interface FileRoutesById {
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   '/_app/snippets': typeof AppSnippetsRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
+  '/snippets/$id': typeof SnippetsIdRoute
   '/snippets/new': typeof SnippetsNewRoute
 }
 export interface FileRouteTypes {
@@ -102,6 +111,7 @@ export interface FileRouteTypes {
     | '/snippets'
     | '/login'
     | '/register'
+    | '/snippets/$id'
     | '/snippets/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/snippets'
     | '/login'
     | '/register'
+    | '/snippets/$id'
     | '/snippets/new'
   id:
     | '__root__'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/_app/snippets'
     | '/_auth/login'
     | '/_auth/register'
+    | '/snippets/$id'
     | '/snippets/new'
   fileRoutesById: FileRoutesById
 }
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  SnippetsIdRoute: typeof SnippetsIdRoute
   SnippetsNewRoute: typeof SnippetsNewRoute
 }
 
@@ -160,6 +173,13 @@ declare module '@tanstack/react-router' {
       path: '/snippets/new'
       fullPath: '/snippets/new'
       preLoaderRoute: typeof SnippetsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/snippets/$id': {
+      id: '/snippets/$id'
+      path: '/snippets/$id'
+      fullPath: '/snippets/$id'
+      preLoaderRoute: typeof SnippetsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/register': {
@@ -234,6 +254,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  SnippetsIdRoute: SnippetsIdRoute,
   SnippetsNewRoute: SnippetsNewRoute,
 }
 export const routeTree = rootRouteImport

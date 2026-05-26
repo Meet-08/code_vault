@@ -1,7 +1,14 @@
 import { type QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { snippetQueryKey } from "./constant";
-import { createSnippet, getSnippets } from "./snippet.api";
+import { createSnippet, getSnippet, getSnippets } from "./snippet.api";
 import type { SnippetCreate, SnippetFilter } from "./snippet.type";
+
+export const useSnippetByIdQuery = (id: string) => {
+	return useQuery({
+		queryKey: [snippetQueryKey.snippets, id],
+		queryFn: () => getSnippet(id),
+	});
+};
 
 export const useSnippetQuery = (filters: SnippetFilter) => {
 	const apiFilters = {

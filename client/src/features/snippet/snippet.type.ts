@@ -8,6 +8,17 @@ export interface SnippetList {
 	createdAt: string;
 }
 
+export interface SnippetDetail {
+	id: number;
+	title: string;
+	language: string;
+	description: string;
+	code: string;
+	tags: string[];
+	isFavorite: boolean;
+	createdAt: string;
+}
+
 export interface SnippetCreate {
 	title: string;
 	description: string;

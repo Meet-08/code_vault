@@ -1,3 +1,4 @@
+import { Button } from "#/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -22,8 +23,8 @@ function SnippetCard({ snippet }: SnippetCardProps) {
 	const tagLabels = snippet.tags.map((tag) => getLabel(tag, snippetTagOptions));
 
 	return (
-		<Card className="group overflow-hidden border-border-base/80 bg-[linear-gradient(180deg,rgba(17,19,24,0.98),rgba(13,15,19,0.98))] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-150 hover:-translate-y-1 hover:border-border-strong hover:shadow-[0_24px_64px_rgba(0,0,0,0.3)]">
-			<CardHeader className="border-b border-border-base/70 bg-[radial-gradient(circle_at_top_right,rgba(43,135,245,0.08),transparent_40%)] px-5 py-4">
+		<Card className="group flex h-full w-full flex-col overflow-hidden border-border-base/80 bg-[linear-gradient(180deg,rgba(17,19,24,0.98),rgba(13,15,19,0.98))] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-150 hover:-translate-y-1 hover:border-border-strong hover:shadow-[0_24px_64px_rgba(0,0,0,0.3)]">
+			<CardHeader className="flex flex-1 flex-col border-b border-border-base/70 bg-[radial-gradient(circle_at_top_right,rgba(43,135,245,0.08),transparent_40%)] px-5 py-4">
 				<div className="flex items-start justify-between gap-4">
 					<div className="space-y-2">
 						<div className="inline-flex w-fit items-center gap-2 rounded-full border border-border-base bg-bg-subtle px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-text-muted">
@@ -35,23 +36,34 @@ function SnippetCard({ snippet }: SnippetCardProps) {
 						</div>
 					</div>
 
-					<div className="flex size-9 items-center justify-center rounded-full border border-border-base bg-bg-subtle text-text-muted">
+					<Button
+						type="button"
+						variant="secondary"
+						size="sm"
+						aria-pressed={snippet.isFavorite}
+						className={cn(
+							"h-8 rounded-full border-border-base bg-bg-subtle px-3 text-xs text-text-muted hover:border-accent-400/60 hover:text-accent-300",
+							snippet.isFavorite &&
+								"border-accent-400/50 bg-[rgb(43_135_245/0.12)] text-accent-300",
+						)}
+					>
 						<Star
 							className={cn(
 								"size-4",
 								snippet.isFavorite && "fill-current text-accent-300",
 							)}
 						/>
-					</div>
+						{snippet.isFavorite ? "Favourited" : "Favourite"}
+					</Button>
 				</div>
 			</CardHeader>
 
-			<CardContent className="space-y-4 px-5 py-4">
+			<CardContent className="flex flex-1 flex-col gap-4 px-5 py-4">
 				<CardDescription className="text-sm leading-relaxed text-text-secondary">
 					{snippet.description}
 				</CardDescription>
 
-				<div className="flex flex-wrap gap-2">
+				<div className="mt-auto flex flex-wrap gap-2">
 					{tagLabels.map((tag) => (
 						<span
 							key={tag}

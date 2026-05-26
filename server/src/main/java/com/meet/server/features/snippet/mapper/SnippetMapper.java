@@ -1,6 +1,7 @@
 package com.meet.server.features.snippet.mapper;
 
 import com.meet.server.features.snippet.dto.CreateSnippetRequest;
+import com.meet.server.features.snippet.dto.SnippetDetailResponse;
 import com.meet.server.features.snippet.dto.SnippetDto;
 import com.meet.server.features.snippet.model.Snippet;
 import com.meet.server.features.snippet.model.Tag;
@@ -28,6 +29,19 @@ public class SnippetMapper {
                 snippet.getId(),
                 snippet.getTitle(),
                 snippet.getLanguage(),
+                snippet.getDescription(),
+                snippet.getTags().stream().map(Tag::getName).toList(),
+                snippet.isFavorite(),
+                snippet.getCreatedAt().toString()
+        );
+    }
+
+    public static SnippetDetailResponse toDetailsDto(Snippet snippet) {
+        return new SnippetDetailResponse(
+                snippet.getId(),
+                snippet.getTitle(),
+                snippet.getLanguage(),
+                snippet.getCode(),
                 snippet.getDescription(),
                 snippet.getTags().stream().map(Tag::getName).toList(),
                 snippet.isFavorite(),

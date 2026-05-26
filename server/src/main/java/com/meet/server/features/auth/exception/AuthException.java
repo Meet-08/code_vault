@@ -1,7 +1,9 @@
 package com.meet.server.features.auth.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public class AuthException extends RuntimeException {
 
     private final String errorCode;
@@ -25,11 +27,4 @@ public class AuthException extends RuntimeException {
         this.status = HttpStatus.UNAUTHORIZED;
     }
 
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public HttpStatus getStatus() {
-        return status;
-    }
 }
