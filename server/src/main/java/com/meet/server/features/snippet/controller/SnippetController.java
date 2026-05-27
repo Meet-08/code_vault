@@ -3,10 +3,7 @@ package com.meet.server.features.snippet.controller;
 import com.meet.server.common.api.ApiResponse;
 import com.meet.server.common.api.PageResponse;
 import com.meet.server.common.security.user.CustomUserPrincipal;
-import com.meet.server.features.snippet.dto.CreateSnippetRequest;
-import com.meet.server.features.snippet.dto.SnippetDetailResponse;
-import com.meet.server.features.snippet.dto.SnippetDto;
-import com.meet.server.features.snippet.dto.SnippetFilterRequest;
+import com.meet.server.features.snippet.dto.*;
 import com.meet.server.features.snippet.service.SnippetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +35,7 @@ public class SnippetController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<SnippetDto>>> getSnippets(
+    public ResponseEntity<ApiResponse<PageResponse<SnippetResponse>>> getSnippets(
             @ModelAttribute SnippetFilterRequest filterRequest,
             @AuthenticationPrincipal CustomUserPrincipal principal,
             @PageableDefault(
@@ -56,7 +53,7 @@ public class SnippetController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<SnippetDto>> createSnippet(
+    public ResponseEntity<ApiResponse<SnippetResponse>> createSnippet(
             @Valid @RequestBody CreateSnippetRequest request,
             @AuthenticationPrincipal CustomUserPrincipal principal
     ) {
@@ -65,4 +62,21 @@ public class SnippetController {
                 .body(ApiResponse.ok("Snippet Created Successfully", response));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<SnippetResponse>> updateSnippet(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateSnippetRequest request,
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        var response = snippetService.updateSnippet(id, request, principal.user());
+        return ResponseEntity.ok(ApiResponse.ok("Snippet Updated Successfully", response));
+    }
+
+    @PatchMapping("/{id}/favourite")
+    public ResponseEntity<ApiResponse<FavouriteResponse>> toggleFavourite(
+            @PathVariable String id,
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        return ResponseEntity.ok(ApiResponse.ok("Favourite status updated successfully", snippetService.toggleFavourite(id, principal.user())));
+    }
 }

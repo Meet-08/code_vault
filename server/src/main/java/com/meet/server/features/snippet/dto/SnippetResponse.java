@@ -2,7 +2,7 @@ package com.meet.server.features.snippet.dto;
 
 import java.util.List;
 
-public record SnippetDto(
+public record SnippetResponse(
         Long id,
         String title,
         String language,

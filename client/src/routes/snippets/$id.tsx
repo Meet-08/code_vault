@@ -1,20 +1,28 @@
 import { Button } from "#/components/ui/button";
 import { Loader } from "#/components/ui/loader";
-import { useSnippetByIdQuery } from "#/features/snippet/snippet.query";
+import {
+	useSnippetByIdQuery,
+	useToggleFavorite,
+} from "#/features/snippet/snippet.query";
+import { getContext } from "#/integrations/tanstack-query/root-provider";
 import { cn } from "#/lib/utils";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
+import type { AxiosError } from "axios";
 import {
 	ArrowLeft,
 	CalendarDays,
 	Check,
 	Code2,
 	Copy,
+	Pencil,
 	Star,
 	Tags,
 } from "lucide-react";
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { toast } from "react-toastify";
+import type { ApiResponse } from "../../..";
 
 export const Route = createFileRoute("/snippets/$id")({
 	component: RouteComponent,
@@ -22,9 +30,17 @@ export const Route = createFileRoute("/snippets/$id")({
 
 function RouteComponent() {
 	const { id } = Route.useParams();
+	const location = useLocation();
+	const { queryClient } = getContext();
 	const snippetQuery = useSnippetByIdQuery(id);
+	const toggleFavoriteMutation = useToggleFavorite(queryClient, id);
 	const snippet = snippetQuery.data;
 	const [hasCopied, setHasCopied] = useState(false);
+	const isEditRoute = location.pathname.endsWith("/edit");
+
+	if (isEditRoute) {
+		return <Outlet />;
+	}
 
 	if (snippetQuery.isPending) {
 		return (
@@ -79,6 +95,23 @@ function RouteComponent() {
 		window.setTimeout(() => setHasCopied(false), 1800);
 	};
 
+	const onToggleFavorite = () => {
+		toast.promise(toggleFavoriteMutation.mutateAsync(), {
+			pending: snippet.isFavourite
+				? "Removing from favourites..."
+				: "Adding to favourites...",
+			success: snippet.isFavourite
+				? "Snippet removed from favourites."
+				: "Snippet added to favourites.",
+			error: {
+				render({ data }) {
+					const error = data as AxiosError<ApiResponse>;
+					return error.response?.data.message || "Failed to update favourite.";
+				},
+			},
+		});
+	};
+
 	return (
 		<main className="page-wide space-y-6 py-6">
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -89,9 +122,17 @@ function RouteComponent() {
 					</Link>
 				</Button>
 
-				<div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-text-muted">
-					<CalendarDays className="size-4" />
-					{createdAt}
+				<div className="flex flex-wrap items-center gap-2">
+					<Button asChild variant="secondary" size="sm">
+						<Link to="/snippets/$id/edit" params={{ id }}>
+							<Pencil className="size-4" />
+							Edit
+						</Link>
+					</Button>
+					<div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-text-muted">
+						<CalendarDays className="size-4" />
+						{createdAt}
+					</div>
 				</div>
 			</div>
 
@@ -106,10 +147,12 @@ function RouteComponent() {
 
 							<button
 								type="button"
-								aria-pressed={snippet.isFavorite}
+								aria-pressed={snippet.isFavourite}
+								disabled={toggleFavoriteMutation.isPending}
+								onClick={onToggleFavorite}
 								className={cn(
 									"inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:border-accent-400/60 hover:text-accent-300",
-									snippet.isFavorite
+									snippet.isFavourite
 										? "border-accent-400/50 bg-[rgb(43_135_245/0.12)] text-accent-300"
 										: "border-border-base bg-bg-overlay text-text-muted",
 								)}
@@ -117,10 +160,10 @@ function RouteComponent() {
 								<Star
 									className={cn(
 										"size-3.5",
-										snippet.isFavorite && "fill-current",
+										snippet.isFavourite && "fill-current",
 									)}
 								/>
-								{snippet.isFavorite ? "Favourited" : "Favourite"}
+								{snippet.isFavourite ? "Favourited" : "Favourite"}
 							</button>
 						</div>
 

@@ -1,12 +1,10 @@
 package com.meet.server.features.snippet.service;
 
 import com.meet.server.common.api.PageResponse;
-import com.meet.server.features.snippet.dto.CreateSnippetRequest;
-import com.meet.server.features.snippet.dto.SnippetDetailResponse;
-import com.meet.server.features.snippet.dto.SnippetDto;
-import com.meet.server.features.snippet.dto.SnippetFilterRequest;
+import com.meet.server.features.snippet.dto.*;
 import com.meet.server.features.snippet.exception.SnippetException;
 import com.meet.server.features.snippet.mapper.SnippetMapper;
+import com.meet.server.features.snippet.model.Snippet;
 import com.meet.server.features.snippet.model.Tag;
 import com.meet.server.features.snippet.repository.SnippetRepository;
 import com.meet.server.features.snippet.specification.SnippetSpecification;
@@ -32,7 +30,7 @@ public class SnippetService {
     private final TagService tagService;
 
     @Transactional
-    public SnippetDto createSnippet(CreateSnippetRequest request, User user) {
+    public SnippetResponse createSnippet(CreateSnippetRequest request, User user) {
         log.debug("Create snippet request: title: {} desc : {}",
                 request.title(),
                 request.description()
@@ -55,7 +53,7 @@ public class SnippetService {
         return SnippetMapper.toDto(snippet);
     }
 
-    public PageResponse<SnippetDto> getSnippets(
+    public PageResponse<SnippetResponse> getSnippets(
             SnippetFilterRequest request,
             User user,
             Pageable pageable
@@ -84,16 +82,45 @@ public class SnippetService {
     }
 
     public SnippetDetailResponse getSnippet(Long snippetId, User user) {
-        log.debug("Get snippet response: {}", snippetId);
+        log.debug("Get snippet: id={}", snippetId);
+        return SnippetMapper.toDetailsDto(findActiveSnippet(snippetId, user));
+    }
+
+    @Transactional
+    public SnippetResponse updateSnippet(String id, UpdateSnippetRequest request, User user) {
+        Snippet existing = findActiveSnippet(Long.parseLong(id), user);
+        log.debug("Update snippet: id={}, title={}", id, existing.getTitle());
+        if (request.title() != null) existing.setTitle(request.title());
+        if (request.description() != null) existing.setDescription(request.description());
+        if (request.language() != null) existing.setLanguage(request.language());
+        if (request.code() != null) existing.setCode(request.code());
+        if (request.tags() != null) {
+            Set<Tag> newTags = request.tags()
+                    .stream()
+                    .map(tagService::findOrCreate)
+                    .collect(Collectors.toSet());
+
+            existing.replaceTags(newTags);
+        }
+        log.debug("Snippet updated: id={}, title={}", existing.getId(), existing.getTitle());
+        return SnippetMapper.toDto(existing);
+    }
+
+    @Transactional
+    public FavouriteResponse toggleFavourite(String id, User user) {
+        Snippet snippet = findActiveSnippet(Long.parseLong(id), user);
+        snippet.setFavorite(!snippet.isFavorite());
+        return new FavouriteResponse(snippet.getId(), snippet.isFavorite());
+    }
+
+    private Snippet findActiveSnippet(Long snippetId, User user) {
         var snippet = snippetRepository
                 .findByIdAndCreatedBy(snippetId, user)
-                .orElseThrow(
-                        () -> new SnippetException("Snippet not found", HttpStatus.NOT_FOUND)
-                );
+                .orElseThrow(() -> new SnippetException("Snippet not found", HttpStatus.NOT_FOUND));
 
         if (snippet.isDeleted())
             throw new SnippetException("Snippet has been deleted", HttpStatus.FORBIDDEN);
 
-        return SnippetMapper.toDetailsDto(snippet);
+        return snippet;
     }
 }

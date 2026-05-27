@@ -16,7 +16,6 @@ spring:
         jdbc:
           time_zone: UTC
         default_batch_fetch_size: 50
-        show_sql: true
 
   data:
     redis:

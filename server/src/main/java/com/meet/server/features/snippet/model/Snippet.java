@@ -96,4 +96,9 @@ public class Snippet extends BaseAuditEntity {
         tags.remove(tag);
         tag.getSnippets().remove(this);
     }
+
+    public void replaceTags(Set<Tag> newTags) {
+        new HashSet<>(tags).forEach(this::removeTag);
+        newTags.forEach(this::addTag);
+    }
 }

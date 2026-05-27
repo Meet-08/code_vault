@@ -4,7 +4,7 @@ export interface SnippetList {
 	language: string;
 	description: string;
 	tags: string[];
-	isFavorite: boolean;
+	isFavourite: boolean;
 	createdAt: string;
 }
 
@@ -15,7 +15,7 @@ export interface SnippetDetail {
 	description: string;
 	code: string;
 	tags: string[];
-	isFavorite: boolean;
+	isFavourite: boolean;
 	createdAt: string;
 }
 
@@ -27,6 +27,14 @@ export interface SnippetCreate {
 	tags: string[];
 }
 
+export interface SnippetUpdate {
+	title: string | null;
+	description: string | null;
+	language: string | null;
+	code: string | null;
+	tags: string[] | null;
+}
+
 export interface SnippetFilter {
 	q?: string;
 	language?: string;
@@ -34,4 +42,9 @@ export interface SnippetFilter {
 	page?: number;
 	size?: number;
 	sort?: string;
+}
+
+export interface SnippetToggleFavorite {
+	id: number;
+	isFavourite: boolean;
 }

@@ -6,6 +6,8 @@ import type {
 	SnippetDetail,
 	SnippetFilter,
 	SnippetList,
+	SnippetToggleFavorite,
+	SnippetUpdate,
 } from "./snippet.type";
 
 export const createSnippet = async (data: SnippetCreate) => {
@@ -24,6 +26,21 @@ export const getSnippets = async (data: SnippetFilter) => {
 		{
 			params: data,
 		},
+	);
+	return unwrap(res.data);
+};
+
+export const updateSnippet = async (id: string, data: SnippetUpdate) => {
+	const res = await api.patch<ApiResponse<SnippetDetail>>(
+		`/snippets/${id}`,
+		data,
+	);
+	return unwrap(res.data);
+};
+
+export const toggleFavourite = async (id: string) => {
+	const res = await api.patch<ApiResponse<SnippetToggleFavorite>>(
+		`/snippets/${id}/favourite`,
 	);
 	return unwrap(res.data);
 };
