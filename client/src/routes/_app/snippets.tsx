@@ -7,7 +7,7 @@ import { snippetTagOptions } from "#/features/snippet/constant";
 import { useSnippetQuery } from "#/features/snippet/snippet.query";
 import { snippetSearchSchema } from "#/features/snippet/snippet.schema";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Plus, Search, X } from "lucide-react";
+import { FolderPlus, Plus, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_app/snippets")({
@@ -122,12 +122,25 @@ function RouteComponent() {
 						</p>
 					</div>
 
-					<Button asChild className="rounded-full px-4">
-						<Link to="/snippets/new">
-							<Plus className="size-4" />
-							Create snippet
-						</Link>
-					</Button>
+					<div className="flex flex-col gap-2 sm:flex-row">
+						<Button
+							asChild
+							variant="secondary"
+							className="rounded-full border border-border-base/80 px-4"
+						>
+							<Link to="/collection">
+								<FolderPlus className="size-4" />
+								Create collection
+							</Link>
+						</Button>
+
+						<Button asChild className="rounded-full px-4">
+							<Link to="/snippets/new">
+								<Plus className="size-4" />
+								Create snippet
+							</Link>
+						</Button>
+					</div>
 				</div>
 
 				<CardContent className="space-y-6 px-6 py-6">

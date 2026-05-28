@@ -14,17 +14,17 @@ import java.util.stream.Collectors;
 public class SnippetSpecification {
 
     public static Specification<Snippet> isNotDeleted() {
-        return (root, query, criteriaBuilder) ->
+        return (root, _, criteriaBuilder) ->
                 criteriaBuilder.isFalse(root.get("isDeleted"));
     }
 
     public static Specification<Snippet> hasUser(User user) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("createdBy"), user);
+        return (root, _, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("createdBy").get("id"), user.getId());
     }
 
     public static Specification<Snippet> containsQuery(String q) {
-        return (root, query, cb) -> {
+        return (root, _, cb) -> {
             if (q == null || q.isBlank())
                 return null;
 
@@ -44,14 +44,14 @@ public class SnippetSpecification {
     }
 
     public static Specification<Snippet> hasLanguage(String language) {
-        return (root, query, criteriaBuilder) -> {
+        return (root, _, criteriaBuilder) -> {
             if (language == null || language.isBlank()) return null;
             return criteriaBuilder.equal(root.get("language"), language.toLowerCase(Locale.ROOT));
         };
     }
 
     public static Specification<Snippet> hasTags(List<String> tags) {
-        return (root, query, cb) -> {
+        return (root, query, _) -> {
             if (tags == null || tags.isEmpty()) return null;
 
             query.distinct(true);
