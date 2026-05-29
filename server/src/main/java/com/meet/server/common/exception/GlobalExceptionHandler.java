@@ -3,6 +3,7 @@ package com.meet.server.common.exception;
 import com.meet.server.common.api.ApiResponse;
 import com.meet.server.features.auth.exception.AuthException;
 import com.meet.server.features.auth.exception.InvalidTokenException;
+import com.meet.server.features.snippet.exception.CollectionException;
 import com.meet.server.features.snippet.exception.SnippetException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -65,6 +66,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SnippetException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleSnippetException(SnippetException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity.status(ex.getStatus())
+                .body(ApiResponse.error(ex.getMessage(), Map.of("Status", ex.getStatus().toString())));
+    }
+
+    @ExceptionHandler(CollectionException.class)
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleCollectionException(CollectionException ex) {
         log.error(ex.getMessage());
         return ResponseEntity.status(ex.getStatus())
                 .body(ApiResponse.error(ex.getMessage(), Map.of("Status", ex.getStatus().toString())));

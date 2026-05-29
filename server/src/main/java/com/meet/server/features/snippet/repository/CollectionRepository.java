@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface CollectionRepository extends JpaRepository<Collection, Long>, JpaSpecificationExecutor<Collection> {
-    
-    @EntityGraph(attributePaths = {"snippets"})
+
+    @EntityGraph(attributePaths = {"snippets", "createdBy"})
     Optional<Collection> findById(long id);
 
     @Query("""

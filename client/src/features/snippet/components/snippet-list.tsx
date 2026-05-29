@@ -23,6 +23,7 @@ function SnippetListView({ snippets }: SnippetListProps) {
 					key={snippet.id}
 					to="/snippets/$id"
 					params={{ id: snippet.id.toString() }}
+					search={(previous) => previous}
 					className="flex h-full"
 				>
 					<SnippetCard snippet={snippet} />

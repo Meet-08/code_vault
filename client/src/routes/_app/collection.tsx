@@ -4,7 +4,7 @@ import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Loader } from "#/components/ui/loader";
 import {
-	useCollectionQuery,
+	useCollectionsQuery,
 	useCreateCollection,
 } from "#/features/collection/collection.query";
 import { useSnippetQuery } from "#/features/snippet/snippet.query";
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_app/collection")({
 
 function RouteComponent() {
 	const { queryClient } = getContext();
-	const collectionQuery = useCollectionQuery();
+	const collectionQuery = useCollectionsQuery();
 	const snippetsQuery = useSnippetQuery({ page: 1, size: 100 });
 	const createCollectionMutation = useCreateCollection(queryClient);
 	const [name, setName] = useState("");
@@ -329,27 +329,31 @@ function RouteComponent() {
 						) : (
 							<div className="grid gap-3">
 								{collections.map((collection) => (
-									<Card
+									<Link
 										key={collection.id}
-										className="border-border-base/80 bg-bg-raised/70 p-0"
+										to="/collections/$id"
+										params={{ id: collection.id.toString() }}
+										className="block"
 									>
-										<CardContent className="p-5">
-											<div className="flex items-start justify-between gap-4">
-												<div className="min-w-0">
-													<div className="text-base font-semibold text-text-primary">
-														{collection.name}
+										<Card className="border-border-base/80 bg-bg-raised/70 p-0 transition hover:border-border-strong hover:bg-bg-overlay/80">
+											<CardContent className="p-5">
+												<div className="flex items-start justify-between gap-4">
+													<div className="min-w-0">
+														<div className="text-base font-semibold text-text-primary">
+															{collection.name}
+														</div>
+														<p className="mt-2 text-sm leading-relaxed text-text-secondary">
+															{collection.description}
+														</p>
 													</div>
-													<p className="mt-2 text-sm leading-relaxed text-text-secondary">
-														{collection.description}
-													</p>
+													<div className="shrink-0 rounded-full border border-border-base bg-bg-subtle px-3 py-1 text-xs font-medium text-text-secondary">
+														{collection.snippetCount} snippet
+														{collection.snippetCount === 1 ? "" : "s"}
+													</div>
 												</div>
-												<div className="shrink-0 rounded-full border border-border-base bg-bg-subtle px-3 py-1 text-xs font-medium text-text-secondary">
-													{collection.snippetCount} snippet
-													{collection.snippetCount === 1 ? "" : "s"}
-												</div>
-											</div>
-										</CardContent>
-									</Card>
+											</CardContent>
+										</Card>
+									</Link>
 								))}
 							</div>
 						)}

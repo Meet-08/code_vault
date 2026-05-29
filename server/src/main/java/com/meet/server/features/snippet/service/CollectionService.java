@@ -1,8 +1,11 @@
 package com.meet.server.features.snippet.service;
 
+import com.meet.server.features.snippet.dto.CollectionDetailResponse;
 import com.meet.server.features.snippet.dto.CollectionResponse;
 import com.meet.server.features.snippet.dto.CreateCollectionRequest;
+import com.meet.server.features.snippet.exception.CollectionException;
 import com.meet.server.features.snippet.mapper.CollectionMapper;
+import com.meet.server.features.snippet.mapper.SnippetMapper;
 import com.meet.server.features.snippet.model.Collection;
 import com.meet.server.features.snippet.repository.CollectionRepository;
 import com.meet.server.features.snippet.specification.CollectionSpecification;
@@ -11,11 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,6 +61,21 @@ public class CollectionService {
         return collections.stream()
                 .map(c -> CollectionMapper.toResponse(c, getSnippetCount(c.getId())))
                 .toList();
+    }
+
+    public CollectionDetailResponse getCollection(Long id, User createdBy) {
+        var collection = collectionRepository.findById(id).orElseThrow(
+                () -> new CollectionException("Collection Not Fount", HttpStatus.NOT_FOUND)
+        );
+
+        if (!Objects.equals(collection.getCreatedBy().getId(), createdBy.getId()))
+            throw new CollectionException("Unauthorized Access Denied", HttpStatus.FORBIDDEN);
+
+        var snippetsResponse = collection.getSnippets().stream()
+                .map(SnippetMapper::toDto)
+                .toList();
+
+        return CollectionMapper.toDetailResponse(collection, snippetsResponse);
     }
 
     private Long getSnippetCount(Long id) {

@@ -12,14 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SnippetsNewRouteImport } from './routes/snippets/new'
-import { Route as SnippetsIdRouteImport } from './routes/snippets/$id'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AppSnippetsRouteImport } from './routes/_app/snippets'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCollectionRouteImport } from './routes/_app/collection'
-import { Route as SnippetsIdEditRouteImport } from './routes/snippets/$id.edit'
+import { Route as AppSnippetsNewRouteImport } from './routes/_app/snippets/new'
+import { Route as AppSnippetsIdRouteImport } from './routes/_app/snippets/$id'
+import { Route as AppCollectionsIdRouteImport } from './routes/_app/collections/$id'
+import { Route as AppSnippetsIdEditRouteImport } from './routes/_app/snippets/$id.edit'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
@@ -32,16 +33,6 @@ const AppRouteRoute = AppRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SnippetsNewRoute = SnippetsNewRouteImport.update({
-  id: '/snippets/new',
-  path: '/snippets/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SnippetsIdRoute = SnippetsIdRouteImport.update({
-  id: '/snippets/$id',
-  path: '/snippets/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -69,33 +60,50 @@ const AppCollectionRoute = AppCollectionRouteImport.update({
   path: '/collection',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const SnippetsIdEditRoute = SnippetsIdEditRouteImport.update({
+const AppSnippetsNewRoute = AppSnippetsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AppSnippetsRoute,
+} as any)
+const AppSnippetsIdRoute = AppSnippetsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppSnippetsRoute,
+} as any)
+const AppCollectionsIdRoute = AppCollectionsIdRouteImport.update({
+  id: '/collections/$id',
+  path: '/collections/$id',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppSnippetsIdEditRoute = AppSnippetsIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
-  getParentRoute: () => SnippetsIdRoute,
+  getParentRoute: () => AppSnippetsIdRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/collection': typeof AppCollectionRoute
   '/dashboard': typeof AppDashboardRoute
-  '/snippets': typeof AppSnippetsRoute
+  '/snippets': typeof AppSnippetsRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
-  '/snippets/$id': typeof SnippetsIdRouteWithChildren
-  '/snippets/new': typeof SnippetsNewRoute
-  '/snippets/$id/edit': typeof SnippetsIdEditRoute
+  '/collections/$id': typeof AppCollectionsIdRoute
+  '/snippets/$id': typeof AppSnippetsIdRouteWithChildren
+  '/snippets/new': typeof AppSnippetsNewRoute
+  '/snippets/$id/edit': typeof AppSnippetsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/collection': typeof AppCollectionRoute
   '/dashboard': typeof AppDashboardRoute
-  '/snippets': typeof AppSnippetsRoute
+  '/snippets': typeof AppSnippetsRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
-  '/snippets/$id': typeof SnippetsIdRouteWithChildren
-  '/snippets/new': typeof SnippetsNewRoute
-  '/snippets/$id/edit': typeof SnippetsIdEditRoute
+  '/collections/$id': typeof AppCollectionsIdRoute
+  '/snippets/$id': typeof AppSnippetsIdRouteWithChildren
+  '/snippets/new': typeof AppSnippetsNewRoute
+  '/snippets/$id/edit': typeof AppSnippetsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,12 +112,13 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_app/collection': typeof AppCollectionRoute
   '/_app/dashboard': typeof AppDashboardRoute
-  '/_app/snippets': typeof AppSnippetsRoute
+  '/_app/snippets': typeof AppSnippetsRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
-  '/snippets/$id': typeof SnippetsIdRouteWithChildren
-  '/snippets/new': typeof SnippetsNewRoute
-  '/snippets/$id/edit': typeof SnippetsIdEditRoute
+  '/_app/collections/$id': typeof AppCollectionsIdRoute
+  '/_app/snippets/$id': typeof AppSnippetsIdRouteWithChildren
+  '/_app/snippets/new': typeof AppSnippetsNewRoute
+  '/_app/snippets/$id/edit': typeof AppSnippetsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/snippets'
     | '/login'
     | '/register'
+    | '/collections/$id'
     | '/snippets/$id'
     | '/snippets/new'
     | '/snippets/$id/edit'
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/snippets'
     | '/login'
     | '/register'
+    | '/collections/$id'
     | '/snippets/$id'
     | '/snippets/new'
     | '/snippets/$id/edit'
@@ -144,17 +155,16 @@ export interface FileRouteTypes {
     | '/_app/snippets'
     | '/_auth/login'
     | '/_auth/register'
-    | '/snippets/$id'
-    | '/snippets/new'
-    | '/snippets/$id/edit'
+    | '/_app/collections/$id'
+    | '/_app/snippets/$id'
+    | '/_app/snippets/new'
+    | '/_app/snippets/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  SnippetsIdRoute: typeof SnippetsIdRouteWithChildren
-  SnippetsNewRoute: typeof SnippetsNewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -178,20 +188,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/snippets/new': {
-      id: '/snippets/new'
-      path: '/snippets/new'
-      fullPath: '/snippets/new'
-      preLoaderRoute: typeof SnippetsNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/snippets/$id': {
-      id: '/snippets/$id'
-      path: '/snippets/$id'
-      fullPath: '/snippets/$id'
-      preLoaderRoute: typeof SnippetsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/register': {
@@ -229,26 +225,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCollectionRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/snippets/$id/edit': {
-      id: '/snippets/$id/edit'
+    '/_app/snippets/new': {
+      id: '/_app/snippets/new'
+      path: '/new'
+      fullPath: '/snippets/new'
+      preLoaderRoute: typeof AppSnippetsNewRouteImport
+      parentRoute: typeof AppSnippetsRoute
+    }
+    '/_app/snippets/$id': {
+      id: '/_app/snippets/$id'
+      path: '/$id'
+      fullPath: '/snippets/$id'
+      preLoaderRoute: typeof AppSnippetsIdRouteImport
+      parentRoute: typeof AppSnippetsRoute
+    }
+    '/_app/collections/$id': {
+      id: '/_app/collections/$id'
+      path: '/collections/$id'
+      fullPath: '/collections/$id'
+      preLoaderRoute: typeof AppCollectionsIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/snippets/$id/edit': {
+      id: '/_app/snippets/$id/edit'
       path: '/edit'
       fullPath: '/snippets/$id/edit'
-      preLoaderRoute: typeof SnippetsIdEditRouteImport
-      parentRoute: typeof SnippetsIdRoute
+      preLoaderRoute: typeof AppSnippetsIdEditRouteImport
+      parentRoute: typeof AppSnippetsIdRoute
     }
   }
 }
 
+interface AppSnippetsIdRouteChildren {
+  AppSnippetsIdEditRoute: typeof AppSnippetsIdEditRoute
+}
+
+const AppSnippetsIdRouteChildren: AppSnippetsIdRouteChildren = {
+  AppSnippetsIdEditRoute: AppSnippetsIdEditRoute,
+}
+
+const AppSnippetsIdRouteWithChildren = AppSnippetsIdRoute._addFileChildren(
+  AppSnippetsIdRouteChildren,
+)
+
+interface AppSnippetsRouteChildren {
+  AppSnippetsIdRoute: typeof AppSnippetsIdRouteWithChildren
+  AppSnippetsNewRoute: typeof AppSnippetsNewRoute
+}
+
+const AppSnippetsRouteChildren: AppSnippetsRouteChildren = {
+  AppSnippetsIdRoute: AppSnippetsIdRouteWithChildren,
+  AppSnippetsNewRoute: AppSnippetsNewRoute,
+}
+
+const AppSnippetsRouteWithChildren = AppSnippetsRoute._addFileChildren(
+  AppSnippetsRouteChildren,
+)
+
 interface AppRouteRouteChildren {
   AppCollectionRoute: typeof AppCollectionRoute
   AppDashboardRoute: typeof AppDashboardRoute
-  AppSnippetsRoute: typeof AppSnippetsRoute
+  AppSnippetsRoute: typeof AppSnippetsRouteWithChildren
+  AppCollectionsIdRoute: typeof AppCollectionsIdRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppCollectionRoute: AppCollectionRoute,
   AppDashboardRoute: AppDashboardRoute,
-  AppSnippetsRoute: AppSnippetsRoute,
+  AppSnippetsRoute: AppSnippetsRouteWithChildren,
+  AppCollectionsIdRoute: AppCollectionsIdRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
@@ -269,24 +314,10 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
-interface SnippetsIdRouteChildren {
-  SnippetsIdEditRoute: typeof SnippetsIdEditRoute
-}
-
-const SnippetsIdRouteChildren: SnippetsIdRouteChildren = {
-  SnippetsIdEditRoute: SnippetsIdEditRoute,
-}
-
-const SnippetsIdRouteWithChildren = SnippetsIdRoute._addFileChildren(
-  SnippetsIdRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  SnippetsIdRoute: SnippetsIdRouteWithChildren,
-  SnippetsNewRoute: SnippetsNewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

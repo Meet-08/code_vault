@@ -26,9 +26,9 @@ import { Plus, Save, Tag, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import type { ApiResponse } from "../../..";
+import type { ApiResponse } from "../../../..";
 
-export const Route = createFileRoute("/snippets/$id/edit")({
+export const Route = createFileRoute("/_app/snippets/$id/edit")({
 	component: RouteComponent,
 });
 
@@ -104,7 +104,10 @@ function RouteComponent() {
 			},
 		});
 
-		navigate({ to: "/snippets/$id", params: { id } });
+		navigate({
+			to: "/snippets/$id",
+			params: { id },
+		});
 	};
 
 	if (snippetQuery.isPending) {
@@ -121,7 +124,8 @@ function RouteComponent() {
 				<section className="rounded-lg border border-border-base bg-bg-raised p-6">
 					<h1 className="text-heading-2">Unable to load this snippet.</h1>
 					<p className="mt-3 text-sm text-text-secondary">
-						The snippet may have been removed, or the server could not return it.
+						The snippet may have been removed, or the server could not return
+						it.
 					</p>
 					<Button asChild variant="secondary" className="mt-5">
 						<Link to="/snippets" search={{ page: 1, size: 10 }}>

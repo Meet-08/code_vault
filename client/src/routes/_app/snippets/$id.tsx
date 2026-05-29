@@ -6,7 +6,12 @@ import {
 } from "#/features/snippet/snippet.query";
 import { getContext } from "#/integrations/tanstack-query/root-provider";
 import { cn } from "#/lib/utils";
-import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	Outlet,
+	useLocation,
+} from "@tanstack/react-router";
 import type { AxiosError } from "axios";
 import {
 	ArrowLeft,
@@ -22,9 +27,9 @@ import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { toast } from "react-toastify";
-import type { ApiResponse } from "../../..";
+import type { ApiResponse } from "../../../..";
 
-export const Route = createFileRoute("/snippets/$id")({
+export const Route = createFileRoute("/_app/snippets/$id")({
 	component: RouteComponent,
 });
 

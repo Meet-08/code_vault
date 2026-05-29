@@ -27,30 +27,24 @@ const getLabel = (
 
 function SnippetCard({ snippet }: SnippetCardProps) {
 	const { queryClient } = getContext();
-	const toggleFavoriteMutation = useToggleFavorite(queryClient, snippet.id.toString());
+	const toggleFavoriteMutation = useToggleFavorite(
+		queryClient,
+		snippet.id.toString(),
+	);
 	const tagLabels = snippet.tags.map((tag) => getLabel(tag, snippetTagOptions));
 
 	const onToggleFavorite = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
 		event.stopPropagation();
 
-		toast.promise(
-			toggleFavoriteMutation.mutateAsync(),
-			{
-				pending: snippet.isFavourite
-					? "Removing from favourites..."
-					: "Adding to favourites...",
-				success: snippet.isFavourite
-					? "Snippet removed from favourites."
-					: "Snippet added to favourites.",
-				error: {
-					render({ data }) {
-						const error = data as AxiosError<ApiResponse>;
-						return error.response?.data.message || "Failed to update favourite.";
-					},
-				},
+		toggleFavoriteMutation.mutate(undefined, {
+			onError(error) {
+				const axiosError = error as AxiosError<ApiResponse>;
+				toast.error(
+					axiosError.response?.data.message || "Failed to update favourite.",
+				);
 			},
-		);
+		});
 	};
 
 	return (

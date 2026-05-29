@@ -22,9 +22,9 @@ import { Plus, Save, Tag, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import type { ApiResponse } from "../../..";
+import type { ApiResponse } from "../../../..";
 
-export const Route = createFileRoute("/snippets/new")({
+export const Route = createFileRoute("/_app/snippets/new")({
 	component: RouteComponent,
 });
 

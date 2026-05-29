@@ -2,6 +2,7 @@ package com.meet.server.features.snippet.controller;
 
 import com.meet.server.common.api.ApiResponse;
 import com.meet.server.common.security.user.CustomUserPrincipal;
+import com.meet.server.features.snippet.dto.CollectionDetailResponse;
 import com.meet.server.features.snippet.dto.CollectionResponse;
 import com.meet.server.features.snippet.dto.CreateCollectionRequest;
 import com.meet.server.features.snippet.service.CollectionService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -37,8 +39,16 @@ public class CollectionController {
             @AuthenticationPrincipal CustomUserPrincipal principal
     ) {
         var collection = collectionService.createCollection(request, principal.user());
-        return ResponseEntity.ok(
-                ApiResponse.ok("Collection Created Successfully", collection)
-        );
+        return ResponseEntity.created(URI.create("/api/collection" + collection.id()))
+                .body(ApiResponse.ok("Created collection", collection));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CollectionDetailResponse>> getCollection(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        var collection = collectionService.getCollection(id, principal.user());
+        return ResponseEntity.ok(ApiResponse.ok("Fetched collection", collection));
     }
 }

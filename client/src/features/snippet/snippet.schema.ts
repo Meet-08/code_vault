@@ -24,12 +24,12 @@ export const snippetSearchSchema = z.object({
 
 	page: z
 		.number()
-		.catch(1)
+		.default(1)
 		.refine((n) => n > 0, { message: "Page must be greater than 0" }),
 
 	size: z
 		.number()
-		.catch(10)
+		.default(10)
 		.refine((n) => n > 0 && n <= 100, {
 			message: "Size must be between 1 and 100",
 		}),
