@@ -2,6 +2,7 @@ import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import { Loader } from "#/components/ui/loader";
 import { useCollectionQuery } from "#/features/collection/collection.query";
+import StatCard from "#/features/collection/component/stat-card";
 import { SnippetListView } from "#/features/snippet/components/snippet-list";
 import { snippetTagOptions } from "#/features/snippet/constant";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -13,7 +14,6 @@ import {
 	Library,
 	Star,
 	Tags,
-	type LucideIcon,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/collections/$id")({
@@ -233,27 +233,5 @@ function RouteComponent() {
 				</CardContent>
 			</section>
 		</main>
-	);
-}
-
-interface StatCardProps {
-	icon: LucideIcon;
-	label: string;
-	value: string;
-}
-
-function StatCard({ icon: Icon, label, value }: StatCardProps) {
-	return (
-		<div className="rounded-2xl border border-border-base/80 bg-bg-subtle/55 p-4">
-			<div className="flex items-center justify-between gap-3">
-				<div className="text-xs font-medium uppercase tracking-[0.18em] text-text-muted">
-					{label}
-				</div>
-				<Icon className="size-4 text-accent-300" />
-			</div>
-			<div className="mt-3 text-2xl font-semibold leading-none text-text-primary">
-				{value}
-			</div>
-		</div>
 	);
 }
