@@ -2,6 +2,7 @@ package com.meet.server.features.snippet.controller;
 
 import com.meet.server.common.api.ApiResponse;
 import com.meet.server.common.security.user.CustomUserPrincipal;
+import com.meet.server.features.snippet.dto.AddSnippetRequest;
 import com.meet.server.features.snippet.dto.CollectionDetailResponse;
 import com.meet.server.features.snippet.dto.CollectionResponse;
 import com.meet.server.features.snippet.dto.CreateCollectionRequest;
@@ -50,5 +51,14 @@ public class CollectionController {
     ) {
         var collection = collectionService.getCollection(id, principal.user());
         return ResponseEntity.ok(ApiResponse.ok("Fetched collection", collection));
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<ApiResponse<CollectionDetailResponse>> addSnippetsToCollection(
+            @PathVariable Long id,
+            @Valid @RequestBody AddSnippetRequest request
+    ) {
+        var collection = collectionService.addSnippetsToCollection(id, request.snippetIds());
+        return ResponseEntity.ok(ApiResponse.ok("Added snippets to collection", collection));
     }
 }

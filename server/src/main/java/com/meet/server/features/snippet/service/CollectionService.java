@@ -78,6 +78,27 @@ public class CollectionService {
         return CollectionMapper.toDetailResponse(collection, snippetsResponse);
     }
 
+    @Transactional
+    public CollectionDetailResponse addSnippetsToCollection(Long id, List<Long> snippetIds) {
+        var collection = collectionRepository.findById(id).orElseThrow(
+                () -> new CollectionException("Collection Not Fount", HttpStatus.NOT_FOUND)
+        );
+
+        var snippets = snippetService.findAllByIds(snippetIds);
+
+        if (snippets.size() != snippetIds.size()) {
+            throw new IllegalArgumentException("Some snippets do not exist");
+        }
+
+        snippets.forEach(collection::addSnippet);
+
+        var snippetResponses = collection.getSnippets().stream()
+                .map(SnippetMapper::toDto)
+                .toList();
+
+        return CollectionMapper.toDetailResponse(collection, snippetResponses);
+    }
+
     private Long getSnippetCount(Long id) {
         return collectionRepository.countSnippetsById(id);
     }

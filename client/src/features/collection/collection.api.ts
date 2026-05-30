@@ -23,3 +23,16 @@ export const getCollection = async (id: number) => {
 	);
 	return unwrap(res.data);
 };
+
+export const addSnippetToCollection = async (
+	collectionId: number,
+	snippetIds: number[],
+) => {
+	const res = await api.post<ApiResponse<void>>(
+		`/collections/${collectionId}`,
+		{
+			snippetIds,
+		},
+	);
+	return unwrap(res.data);
+};

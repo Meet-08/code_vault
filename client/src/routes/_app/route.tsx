@@ -2,7 +2,12 @@ import Navbar from "#/components/Navbar";
 import { Loader } from "#/components/ui/loader";
 import { useCurrentUser } from "#/features/auth/auth.query";
 import { canAccessRoute } from "#/lib/utils";
-import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Navigate,
+	Outlet,
+	useLocation,
+} from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app")({
 	component: RouteComponent,
@@ -10,6 +15,9 @@ export const Route = createFileRoute("/_app")({
 
 function RouteComponent() {
 	const { data: user, isLoading } = useCurrentUser();
+	const pathname = useLocation({ select: (l) => l.pathname });
+	const hideNavbar =
+		pathname.startsWith("/snippets/") || pathname.startsWith("/collections/");
 
 	if (isLoading)
 		return (
@@ -28,7 +36,7 @@ function RouteComponent() {
 
 	return (
 		<>
-			<Navbar />
+			{!hideNavbar && <Navbar />}
 			<Outlet />
 		</>
 	);

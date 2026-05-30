@@ -6,7 +6,13 @@ import { SnippetListView } from "#/features/snippet/components/snippet-list";
 import { snippetTagOptions } from "#/features/snippet/constant";
 import { useSnippetQuery } from "#/features/snippet/snippet.query";
 import { snippetSearchSchema } from "#/features/snippet/snippet.schema";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	Outlet,
+	useLocation,
+	useNavigate,
+} from "@tanstack/react-router";
 import { FolderPlus, Plus, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -16,6 +22,16 @@ export const Route = createFileRoute("/_app/snippets")({
 });
 
 function RouteComponent() {
+	const location = useLocation();
+
+	if (location.pathname !== "/snippets") {
+		return <Outlet />;
+	}
+
+	return <SnippetsIndexPage />;
+}
+
+function SnippetsIndexPage() {
 	const navigate = useNavigate();
 	const search = Route.useSearch();
 	const [searchInput, setSearchInput] = useState(search.q ?? "");

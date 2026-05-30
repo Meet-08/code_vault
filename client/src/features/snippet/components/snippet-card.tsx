@@ -49,14 +49,14 @@ function SnippetCard({ snippet }: SnippetCardProps) {
 
 	return (
 		<Card className="group flex h-full w-full flex-col overflow-hidden border-border-base/80 bg-[linear-gradient(180deg,rgba(17,19,24,0.98),rgba(13,15,19,0.98))] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition-all duration-150 hover:-translate-y-1 hover:border-border-strong hover:shadow-[0_24px_64px_rgba(0,0,0,0.3)]">
-			<CardHeader className="flex flex-1 flex-col border-b border-border-base/70 bg-[radial-gradient(circle_at_top_right,rgba(43,135,245,0.08),transparent_40%)] px-5 py-4">
+			<CardHeader className="border-b border-border-base/70 bg-[radial-gradient(circle_at_top_right,rgba(43,135,245,0.08),transparent_40%)] px-5 py-4">
 				<div className="flex items-start justify-between gap-4">
-					<div className="space-y-2">
+					<div className="min-w-0 space-y-2">
 						<div className="inline-flex w-fit items-center gap-2 rounded-full border border-border-base bg-bg-subtle px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-text-muted">
 							<Code2 className="size-3.5" />
 							{snippet.language.toUpperCase()}
 						</div>
-						<div className="text-lg font-semibold tracking-tight text-text-primary">
+						<div className="line-clamp-2 text-lg font-semibold tracking-tight text-text-primary">
 							{snippet.title}
 						</div>
 					</div>
@@ -69,7 +69,7 @@ function SnippetCard({ snippet }: SnippetCardProps) {
 						disabled={toggleFavoriteMutation.isPending}
 						onClick={onToggleFavorite}
 						className={cn(
-							"h-8 rounded-full border-border-base bg-bg-subtle px-3 text-xs text-text-muted hover:border-accent-400/60 hover:text-accent-300",
+							"h-8 shrink-0 rounded-full border-border-base bg-bg-subtle px-3 text-xs text-text-muted hover:border-accent-400/60 hover:text-accent-300",
 							snippet.isFavourite &&
 								"border-accent-400/50 bg-[rgb(43_135_245/0.12)] text-accent-300",
 						)}
@@ -86,7 +86,7 @@ function SnippetCard({ snippet }: SnippetCardProps) {
 			</CardHeader>
 
 			<CardContent className="flex flex-1 flex-col gap-4 px-5 py-4">
-				<CardDescription className="text-sm leading-relaxed text-text-secondary">
+				<CardDescription className="line-clamp-3 text-sm leading-relaxed text-text-secondary">
 					{snippet.description}
 				</CardDescription>
 

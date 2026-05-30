@@ -16,7 +16,7 @@ import {
 } from "#/features/snippet/snippet.schema";
 import { getContext } from "#/integrations/tanstack-query/root-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import type { AxiosError } from "axios";
 import { Plus, Save, Tag, Trash2, X } from "lucide-react";
 import { useState } from "react";
@@ -30,6 +30,7 @@ export const Route = createFileRoute("/_app/snippets/new")({
 
 function RouteComponent() {
 	const { queryClient } = getContext();
+	const navigate = useNavigate();
 	const createSnippetMutation = useCreateSnippet(queryClient);
 	const [customTag, setCustomTag] = useState("");
 	const form = useForm<SnippetCreate>({
@@ -70,19 +71,26 @@ function RouteComponent() {
 		);
 	};
 
-	const onSubmit = (data: SnippetCreate) => {
-		toast.promise(createSnippetMutation.mutateAsync(data), {
-			pending: "Saving snippet...",
-			success: "Snippet created successfully!",
-			error: {
-				render({ data }) {
-					const error = data as AxiosError<ApiResponse>;
-					return error.response?.data.message || "Failed to create snippet.";
+	const onSubmit = async (data: SnippetCreate) => {
+		try {
+			const snippet = await toast.promise(
+				createSnippetMutation.mutateAsync(data),
+				{
+					pending: "Saving snippet...",
+					success: "Snippet created successfully!",
+					error: {
+						render({ data }) {
+							const error = data as AxiosError<ApiResponse>;
+							return (
+								error.response?.data.message || "Failed to create snippet."
+							);
+						},
+					},
 				},
-			},
-		});
+			);
 
-		//TODO: navigate to the newly created snippet page after successful creation
+			navigate({ to: "/snippets/$id", params: { id: snippet.id.toString() } });
+		} catch {}
 	};
 
 	return (

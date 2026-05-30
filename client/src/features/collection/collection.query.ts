@@ -1,5 +1,6 @@
 import { type QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
+	addSnippetToCollection,
 	createCollection,
 	getCollection,
 	getCollections,
@@ -27,6 +28,23 @@ export const useCreateCollection = (queryClient: QueryClient) => {
 		mutationFn: (data: CollectionCreate) => createCollection(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: [collectionKey.collection] });
+		},
+	});
+};
+
+export const useAddSnippetToCollection = (queryClient: QueryClient) => {
+	return useMutation({
+		mutationFn: ({
+			collectionId,
+			snippetIds,
+		}: {
+			collectionId: number;
+			snippetIds: number[];
+		}) => addSnippetToCollection(collectionId, snippetIds),
+		onSuccess: (_, { collectionId }) => {
+			queryClient.invalidateQueries({
+				queryKey: [collectionKey.collection, collectionId],
+			});
 		},
 	});
 };
