@@ -114,6 +114,12 @@ public class SnippetService {
         return new FavouriteResponse(snippet.getId(), snippet.isFavorite());
     }
 
+    @Transactional
+    public void deleteSnippet(Long id, User user) {
+        Snippet snippet = findActiveSnippet(id, user);
+        snippet.setDeleted(true);
+    }
+
     public List<Snippet> findAllByIds(List<Long> ids) {
         return snippetRepository.findAllById(ids);
     }

@@ -2,10 +2,10 @@ package com.meet.server.features.snippet.controller;
 
 import com.meet.server.common.api.ApiResponse;
 import com.meet.server.common.security.user.CustomUserPrincipal;
-import com.meet.server.features.snippet.dto.AddSnippetRequest;
 import com.meet.server.features.snippet.dto.CollectionDetailResponse;
 import com.meet.server.features.snippet.dto.CollectionResponse;
 import com.meet.server.features.snippet.dto.CreateCollectionRequest;
+import com.meet.server.features.snippet.dto.SnippetIdsRequest;
 import com.meet.server.features.snippet.service.CollectionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,12 +53,21 @@ public class CollectionController {
         return ResponseEntity.ok(ApiResponse.ok("Fetched collection", collection));
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/snippets")
     public ResponseEntity<ApiResponse<CollectionDetailResponse>> addSnippetsToCollection(
             @PathVariable Long id,
-            @Valid @RequestBody AddSnippetRequest request
+            @Valid @RequestBody SnippetIdsRequest request
     ) {
         var collection = collectionService.addSnippetsToCollection(id, request.snippetIds());
         return ResponseEntity.ok(ApiResponse.ok("Added snippets to collection", collection));
+    }
+
+    @DeleteMapping("/{id}/snippets")
+    public ResponseEntity<ApiResponse<Void>> removeSnippetsFromCollection(
+            @PathVariable Long id,
+            @Valid @RequestBody SnippetIdsRequest request
+    ) {
+        collectionService.removeSnippetsFromCollection(id, request.snippetIds());
+        return ResponseEntity.ok(ApiResponse.ok("Removed snippets from collection", null));
     }
 }

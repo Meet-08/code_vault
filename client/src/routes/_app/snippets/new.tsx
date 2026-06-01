@@ -72,25 +72,21 @@ function RouteComponent() {
 	};
 
 	const onSubmit = async (data: SnippetCreate) => {
-		try {
-			const snippet = await toast.promise(
-				createSnippetMutation.mutateAsync(data),
-				{
-					pending: "Saving snippet...",
-					success: "Snippet created successfully!",
-					error: {
-						render({ data }) {
-							const error = data as AxiosError<ApiResponse>;
-							return (
-								error.response?.data.message || "Failed to create snippet."
-							);
-						},
+		const snippet = await toast.promise(
+			createSnippetMutation.mutateAsync(data),
+			{
+				pending: "Saving snippet...",
+				success: "Snippet created successfully!",
+				error: {
+					render({ data }) {
+						const error = data as AxiosError<ApiResponse>;
+						return error.response?.data.message || "Failed to create snippet.";
 					},
 				},
-			);
+			},
+		);
 
-			navigate({ to: "/snippets/$id", params: { id: snippet.id.toString() } });
-		} catch {}
+		navigate({ to: "/snippets/$id", params: { id: snippet.id.toString() } });
 	};
 
 	return (

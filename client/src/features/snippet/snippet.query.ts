@@ -1,10 +1,11 @@
 import { type QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import type { PageResponse } from "../../..";
-import { collectionKey } from "../collection/constant";
 import type { CollectionDetail } from "../collection/collection.type";
+import { collectionKey } from "../collection/constant";
 import { snippetQueryKey } from "./constant";
 import {
 	createSnippet,
+	deleteSnippet,
 	getSnippet,
 	getSnippets,
 	toggleFavourite,
@@ -109,9 +110,27 @@ export const useUpdateSnippet = (queryClient: QueryClient, id: string) => {
 				queryKey: [snippetQueryKey.snippets],
 			});
 			queryClient.invalidateQueries({
+				queryKey: [collectionKey.collection],
+			});
+			queryClient.invalidateQueries({
 				queryKey: [snippetQueryKey.snippets, id],
 				exact: true,
 				refetchType: "active",
+			});
+		},
+	});
+};
+
+export const useDeleteSnippet = (queryClient: QueryClient, id: string) => {
+	return useMutation({
+		mutationFn: () => deleteSnippet(id),
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: [snippetQueryKey.snippets],
+			});
+			queryClient.invalidateQueries({
+				queryKey: [snippetQueryKey.snippets, id],
+				exact: true,
 			});
 		},
 	});

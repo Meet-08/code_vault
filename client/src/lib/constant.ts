@@ -14,7 +14,7 @@ export const navigationItems = [
 	{
 		label: "Collection",
 		description: "Browse your collections",
-		to: "/collection",
+		to: "/collections",
 		exact: true,
 	},
 ];

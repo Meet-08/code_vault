@@ -4,6 +4,7 @@ import {
 	createCollection,
 	getCollection,
 	getCollections,
+	removeSnippetFromCollection,
 } from "./collection.api";
 import type { CollectionCreate } from "./collection.type";
 import { collectionKey } from "./constant";
@@ -41,10 +42,23 @@ export const useAddSnippetToCollection = (queryClient: QueryClient) => {
 			collectionId: number;
 			snippetIds: number[];
 		}) => addSnippetToCollection(collectionId, snippetIds),
-		onSuccess: (_, { collectionId }) => {
-			queryClient.invalidateQueries({
-				queryKey: [collectionKey.collection, collectionId],
-			});
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: [collectionKey.collection] });
+		},
+	});
+};
+
+export const useRemoveSnippetFromCollection = (queryClient: QueryClient) => {
+	return useMutation({
+		mutationFn: ({
+			collectionId,
+			snippetIds,
+		}: {
+			collectionId: number;
+			snippetIds: number[];
+		}) => removeSnippetFromCollection(collectionId, snippetIds),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: [collectionKey.collection] });
 		},
 	});
 };

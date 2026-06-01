@@ -10,7 +10,12 @@ import {
 import { useSnippetQuery } from "#/features/snippet/snippet.query";
 import { getContext } from "#/integrations/tanstack-query/root-provider";
 import { cn } from "#/lib/utils";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	Outlet,
+	useLocation,
+} from "@tanstack/react-router";
 import type { AxiosError } from "axios";
 import {
 	BookOpen,
@@ -23,13 +28,23 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import type { ApiResponse } from "../../..";
+import type { ApiResponse } from "../../../..";
 
-export const Route = createFileRoute("/_app/collection")({
+export const Route = createFileRoute("/_app/collections/")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
+	const location = useLocation();
+
+	if (location.pathname !== "/collections") {
+		return <Outlet />;
+	}
+
+	return <CollectionsIndexPage />;
+}
+
+function CollectionsIndexPage() {
 	const { queryClient } = getContext();
 	const collectionQuery = useCollectionsQuery();
 	const snippetsQuery = useSnippetQuery({ page: 1, size: 100 });

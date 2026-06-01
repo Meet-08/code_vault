@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record AddSnippetRequest(
+public record SnippetIdsRequest(
         @NotNull
         List<Long> snippetIds
 ) {

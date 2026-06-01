@@ -1,5 +1,6 @@
 import { Button } from "#/components/ui/button";
 import { Loader } from "#/components/ui/loader";
+import { DeleteSnippetButton } from "#/features/snippet/components/delete-snippet-button";
 import {
 	useSnippetByIdQuery,
 	useToggleFavorite,
@@ -134,6 +135,7 @@ function RouteComponent() {
 							Edit
 						</Link>
 					</Button>
+					<DeleteSnippetButton id={id} />
 					<div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-text-muted">
 						<CalendarDays className="size-4" />
 						{createdAt}

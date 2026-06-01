@@ -29,9 +29,24 @@ export const addSnippetToCollection = async (
 	snippetIds: number[],
 ) => {
 	const res = await api.post<ApiResponse<void>>(
-		`/collections/${collectionId}`,
+		`/collections/${collectionId}/snippets`,
 		{
 			snippetIds,
+		},
+	);
+	return unwrap(res.data);
+};
+
+export const removeSnippetFromCollection = async (
+	collectionId: number,
+	snippetIds: number[],
+) => {
+	const res = await api.delete<ApiResponse<void>>(
+		`/collections/${collectionId}/snippets`,
+		{
+			data: {
+				snippetIds,
+			},
 		},
 	);
 	return unwrap(res.data);

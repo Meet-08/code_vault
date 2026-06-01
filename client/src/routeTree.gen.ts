@@ -14,9 +14,9 @@ import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
-import { Route as AppSnippetsRouteImport } from './routes/_app/snippets'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
-import { Route as AppCollectionRouteImport } from './routes/_app/collection'
+import { Route as AppSnippetsIndexRouteImport } from './routes/_app/snippets/index'
+import { Route as AppCollectionsIndexRouteImport } from './routes/_app/collections/index'
 import { Route as AppSnippetsNewRouteImport } from './routes/_app/snippets/new'
 import { Route as AppSnippetsIdRouteImport } from './routes/_app/snippets/$id'
 import { Route as AppCollectionsIdRouteImport } from './routes/_app/collections/$id'
@@ -45,30 +45,30 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AppSnippetsRoute = AppSnippetsRouteImport.update({
-  id: '/snippets',
-  path: '/snippets',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppCollectionRoute = AppCollectionRouteImport.update({
-  id: '/collection',
-  path: '/collection',
+const AppSnippetsIndexRoute = AppSnippetsIndexRouteImport.update({
+  id: '/snippets/',
+  path: '/snippets/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppCollectionsIndexRoute = AppCollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppSnippetsNewRoute = AppSnippetsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AppSnippetsRoute,
+  id: '/snippets/new',
+  path: '/snippets/new',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const AppSnippetsIdRoute = AppSnippetsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AppSnippetsRoute,
+  id: '/snippets/$id',
+  path: '/snippets/$id',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const AppCollectionsIdRoute = AppCollectionsIdRouteImport.update({
   id: '/collections/$id',
@@ -83,26 +83,26 @@ const AppSnippetsIdEditRoute = AppSnippetsIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/collection': typeof AppCollectionRoute
   '/dashboard': typeof AppDashboardRoute
-  '/snippets': typeof AppSnippetsRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/collections/$id': typeof AppCollectionsIdRoute
   '/snippets/$id': typeof AppSnippetsIdRouteWithChildren
   '/snippets/new': typeof AppSnippetsNewRoute
+  '/collections/': typeof AppCollectionsIndexRoute
+  '/snippets/': typeof AppSnippetsIndexRoute
   '/snippets/$id/edit': typeof AppSnippetsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/collection': typeof AppCollectionRoute
   '/dashboard': typeof AppDashboardRoute
-  '/snippets': typeof AppSnippetsRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/collections/$id': typeof AppCollectionsIdRoute
   '/snippets/$id': typeof AppSnippetsIdRouteWithChildren
   '/snippets/new': typeof AppSnippetsNewRoute
+  '/collections': typeof AppCollectionsIndexRoute
+  '/snippets': typeof AppSnippetsIndexRoute
   '/snippets/$id/edit': typeof AppSnippetsIdEditRoute
 }
 export interface FileRoutesById {
@@ -110,54 +110,54 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
-  '/_app/collection': typeof AppCollectionRoute
   '/_app/dashboard': typeof AppDashboardRoute
-  '/_app/snippets': typeof AppSnippetsRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_app/collections/$id': typeof AppCollectionsIdRoute
   '/_app/snippets/$id': typeof AppSnippetsIdRouteWithChildren
   '/_app/snippets/new': typeof AppSnippetsNewRoute
+  '/_app/collections/': typeof AppCollectionsIndexRoute
+  '/_app/snippets/': typeof AppSnippetsIndexRoute
   '/_app/snippets/$id/edit': typeof AppSnippetsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/collection'
     | '/dashboard'
-    | '/snippets'
     | '/login'
     | '/register'
     | '/collections/$id'
     | '/snippets/$id'
     | '/snippets/new'
+    | '/collections/'
+    | '/snippets/'
     | '/snippets/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/collection'
     | '/dashboard'
-    | '/snippets'
     | '/login'
     | '/register'
     | '/collections/$id'
     | '/snippets/$id'
     | '/snippets/new'
+    | '/collections'
+    | '/snippets'
     | '/snippets/$id/edit'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/_auth'
-    | '/_app/collection'
     | '/_app/dashboard'
-    | '/_app/snippets'
     | '/_auth/login'
     | '/_auth/register'
     | '/_app/collections/$id'
     | '/_app/snippets/$id'
     | '/_app/snippets/new'
+    | '/_app/collections/'
+    | '/_app/snippets/'
     | '/_app/snippets/$id/edit'
   fileRoutesById: FileRoutesById
 }
@@ -204,13 +204,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_app/snippets': {
-      id: '/_app/snippets'
-      path: '/snippets'
-      fullPath: '/snippets'
-      preLoaderRoute: typeof AppSnippetsRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/_app/dashboard': {
       id: '/_app/dashboard'
       path: '/dashboard'
@@ -218,26 +211,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/collection': {
-      id: '/_app/collection'
-      path: '/collection'
-      fullPath: '/collection'
-      preLoaderRoute: typeof AppCollectionRouteImport
+    '/_app/snippets/': {
+      id: '/_app/snippets/'
+      path: '/snippets'
+      fullPath: '/snippets/'
+      preLoaderRoute: typeof AppSnippetsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/collections/': {
+      id: '/_app/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof AppCollectionsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/snippets/new': {
       id: '/_app/snippets/new'
-      path: '/new'
+      path: '/snippets/new'
       fullPath: '/snippets/new'
       preLoaderRoute: typeof AppSnippetsNewRouteImport
-      parentRoute: typeof AppSnippetsRoute
+      parentRoute: typeof AppRouteRoute
     }
     '/_app/snippets/$id': {
       id: '/_app/snippets/$id'
-      path: '/$id'
+      path: '/snippets/$id'
       fullPath: '/snippets/$id'
       preLoaderRoute: typeof AppSnippetsIdRouteImport
-      parentRoute: typeof AppSnippetsRoute
+      parentRoute: typeof AppRouteRoute
     }
     '/_app/collections/$id': {
       id: '/_app/collections/$id'
@@ -268,32 +268,22 @@ const AppSnippetsIdRouteWithChildren = AppSnippetsIdRoute._addFileChildren(
   AppSnippetsIdRouteChildren,
 )
 
-interface AppSnippetsRouteChildren {
+interface AppRouteRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppCollectionsIdRoute: typeof AppCollectionsIdRoute
   AppSnippetsIdRoute: typeof AppSnippetsIdRouteWithChildren
   AppSnippetsNewRoute: typeof AppSnippetsNewRoute
-}
-
-const AppSnippetsRouteChildren: AppSnippetsRouteChildren = {
-  AppSnippetsIdRoute: AppSnippetsIdRouteWithChildren,
-  AppSnippetsNewRoute: AppSnippetsNewRoute,
-}
-
-const AppSnippetsRouteWithChildren = AppSnippetsRoute._addFileChildren(
-  AppSnippetsRouteChildren,
-)
-
-interface AppRouteRouteChildren {
-  AppCollectionRoute: typeof AppCollectionRoute
-  AppDashboardRoute: typeof AppDashboardRoute
-  AppSnippetsRoute: typeof AppSnippetsRouteWithChildren
-  AppCollectionsIdRoute: typeof AppCollectionsIdRoute
+  AppCollectionsIndexRoute: typeof AppCollectionsIndexRoute
+  AppSnippetsIndexRoute: typeof AppSnippetsIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppCollectionRoute: AppCollectionRoute,
   AppDashboardRoute: AppDashboardRoute,
-  AppSnippetsRoute: AppSnippetsRouteWithChildren,
   AppCollectionsIdRoute: AppCollectionsIdRoute,
+  AppSnippetsIdRoute: AppSnippetsIdRouteWithChildren,
+  AppSnippetsNewRoute: AppSnippetsNewRoute,
+  AppCollectionsIndexRoute: AppCollectionsIndexRoute,
+  AppSnippetsIndexRoute: AppSnippetsIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

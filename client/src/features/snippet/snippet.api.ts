@@ -44,3 +44,8 @@ export const toggleFavourite = async (id: string) => {
 	);
 	return unwrap(res.data);
 };
+
+export const deleteSnippet = async (id: string) => {
+	const res = await api.delete(`/snippets/${id}`);
+	return unwrap(res.data);
+};

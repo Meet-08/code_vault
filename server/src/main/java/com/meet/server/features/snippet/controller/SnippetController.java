@@ -72,6 +72,15 @@ public class SnippetController {
         return ResponseEntity.ok(ApiResponse.ok("Snippet Updated Successfully", response));
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteSnippet(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        snippetService.deleteSnippet(id, principal.user());
+        return ResponseEntity.ok(ApiResponse.ok("Snippet Deleted Successfully", null));
+    }
+
     @PatchMapping("/{id}/favourite")
     public ResponseEntity<ApiResponse<FavouriteResponse>> toggleFavourite(
             @PathVariable String id,
