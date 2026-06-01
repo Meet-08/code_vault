@@ -2,6 +2,7 @@ import { type QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import type { PageResponse } from "../../..";
 import type { CollectionDetail } from "../collection/collection.type";
 import { collectionKey } from "../collection/constant";
+import { dashboardKey } from "../dashboard/constant";
 import { snippetQueryKey } from "./constant";
 import {
 	createSnippet,
@@ -98,6 +99,9 @@ export const useCreateSnippet = (queryClient: QueryClient) => {
 			queryClient.invalidateQueries({
 				queryKey: [snippetQueryKey.snippets],
 			});
+			queryClient.invalidateQueries({
+				queryKey: [dashboardKey.dashboard],
+			});
 		},
 	});
 };
@@ -111,6 +115,9 @@ export const useUpdateSnippet = (queryClient: QueryClient, id: string) => {
 			});
 			queryClient.invalidateQueries({
 				queryKey: [collectionKey.collection],
+			});
+			queryClient.invalidateQueries({
+				queryKey: [dashboardKey.dashboard],
 			});
 			queryClient.invalidateQueries({
 				queryKey: [snippetQueryKey.snippets, id],
@@ -131,6 +138,9 @@ export const useDeleteSnippet = (queryClient: QueryClient, id: string) => {
 			queryClient.invalidateQueries({
 				queryKey: [snippetQueryKey.snippets, id],
 				exact: true,
+			});
+			queryClient.invalidateQueries({
+				queryKey: [dashboardKey.dashboard],
 			});
 		},
 	});
@@ -221,6 +231,10 @@ export const useToggleFavorite = (queryClient: QueryClient, id: string) => {
 			}
 		},
 		onSuccess: (data: SnippetToggleFavorite) => {
+			queryClient.invalidateQueries({
+				queryKey: [dashboardKey.dashboard],
+			});
+
 			queryClient.setQueriesData<PageResponse<SnippetList>>(
 				{ queryKey: [snippetQueryKey.snippets] },
 				(page) => {

@@ -8,6 +8,8 @@ import com.meet.server.features.snippet.model.Tag;
 import com.meet.server.features.user.model.User;
 import lombok.experimental.UtilityClass;
 
+import java.util.Locale;
+
 @UtilityClass
 public class SnippetMapper {
 
@@ -18,7 +20,7 @@ public class SnippetMapper {
         return Snippet.builder()
                 .title(createSnippetRequest.title())
                 .description(createSnippetRequest.description())
-                .language(createSnippetRequest.language())
+                .language(createSnippetRequest.language().toLowerCase(Locale.ROOT))
                 .createdBy(user)
                 .code(createSnippetRequest.code())
                 .build();

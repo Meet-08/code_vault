@@ -6,6 +6,7 @@ import {
 	getCollections,
 	removeSnippetFromCollection,
 } from "./collection.api";
+import { dashboardKey } from "../dashboard/constant";
 import type { CollectionCreate } from "./collection.type";
 import { collectionKey } from "./constant";
 
@@ -29,6 +30,7 @@ export const useCreateCollection = (queryClient: QueryClient) => {
 		mutationFn: (data: CollectionCreate) => createCollection(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: [collectionKey.collection] });
+			queryClient.invalidateQueries({ queryKey: [dashboardKey.dashboard] });
 		},
 	});
 };
@@ -44,6 +46,7 @@ export const useAddSnippetToCollection = (queryClient: QueryClient) => {
 		}) => addSnippetToCollection(collectionId, snippetIds),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: [collectionKey.collection] });
+			queryClient.invalidateQueries({ queryKey: [dashboardKey.dashboard] });
 		},
 	});
 };
@@ -59,6 +62,7 @@ export const useRemoveSnippetFromCollection = (queryClient: QueryClient) => {
 		}) => removeSnippetFromCollection(collectionId, snippetIds),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: [collectionKey.collection] });
+			queryClient.invalidateQueries({ queryKey: [dashboardKey.dashboard] });
 		},
 	});
 };

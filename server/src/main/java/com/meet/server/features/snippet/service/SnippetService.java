@@ -1,6 +1,7 @@
 package com.meet.server.features.snippet.service;
 
 import com.meet.server.common.api.PageResponse;
+import com.meet.server.features.dashboard.dto.LanguageCount;
 import com.meet.server.features.snippet.dto.*;
 import com.meet.server.features.snippet.exception.SnippetException;
 import com.meet.server.features.snippet.mapper.SnippetMapper;
@@ -11,7 +12,9 @@ import com.meet.server.features.snippet.specification.SnippetSpecification;
 import com.meet.server.features.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -133,5 +136,47 @@ public class SnippetService {
             throw new SnippetException("Snippet has been deleted", HttpStatus.FORBIDDEN);
 
         return snippet;
+    }
+
+    public List<SnippetResponse> recentSnippets(User user) {
+        var spec = Specification.allOf(
+                SnippetSpecification.isNotDeleted(),
+                SnippetSpecification.hasUser(user)
+        );
+
+        var pageable = PageRequest.of(
+                0, 5,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+
+        var page = snippetRepository.findAll(spec, pageable);
+
+        return page.getContent()
+                .stream()
+                .map(SnippetMapper::toDto)
+                .toList();
+    }
+
+    public Long getFavouriteCount(User user) {
+        var spec = Specification.allOf(
+                SnippetSpecification.isNotDeleted(),
+                SnippetSpecification.hasUser(user),
+                SnippetSpecification.isFavourite(true)
+        );
+
+        return snippetRepository.count(spec);
+    }
+
+    public Long getSnippetCount(User user) {
+        var spec = Specification.allOf(
+                SnippetSpecification.isNotDeleted(),
+                SnippetSpecification.hasUser(user)
+        );
+
+        return snippetRepository.count(spec);
+    }
+
+    public List<LanguageCount> getLanguageCounts(User user) {
+        return snippetRepository.getLanguageCounts(user.getId());
     }
 }

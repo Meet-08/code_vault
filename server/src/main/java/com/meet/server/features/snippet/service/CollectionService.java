@@ -117,4 +117,9 @@ public class CollectionService {
     private Long getSnippetCount(Long id) {
         return collectionRepository.countSnippetsById(id);
     }
+
+    public Long getCollectionCount(User createdBy) {
+        var spec = Specification.allOf(CollectionSpecification.isCreatedBy(createdBy));
+        return collectionRepository.count(spec);
+    }
 }
