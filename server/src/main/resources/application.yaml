@@ -2,7 +2,6 @@ spring:
   application:
     name: server
 
-
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
@@ -17,6 +16,10 @@ spring:
           time_zone: UTC
         default_batch_fetch_size: 50
 
+  cache:
+    type: redis
+    redis:
+      time-to-live: 10m
 
   data:
     redis:
@@ -35,6 +38,9 @@ spring:
           auth: true
           starttls:
             enable: true
+  devtools:
+    restart:
+      enabled: false
 
 jwt:
   secret: ${JWT_SECRET}

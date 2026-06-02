@@ -10,6 +10,7 @@ import com.meet.server.features.user.exception.UserException;
 import com.meet.server.features.user.model.User;
 import com.meet.server.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
+    @CacheEvict(value = "admin-dashboard", allEntries = true)
     public User createUser(String name, String email, String encodedPassword) {
         if (userRepository.existsByEmail(email)) {
             throw new UserException("Email already in use");

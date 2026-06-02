@@ -7,6 +7,7 @@ import com.meet.server.features.snippet.service.CollectionService;
 import com.meet.server.features.snippet.service.SnippetService;
 import com.meet.server.features.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class AdminService {
     private final SnippetService snippetService;
     private final CollectionService collectionService;
 
+    @Cacheable(value = "admin-dashboard")
     public AdminDashboardStats getAdminDashboardStats() {
         return AdminDashboardStats.builder()
                 .userCount(userService.countUsers())

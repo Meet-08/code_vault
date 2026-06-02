@@ -1,5 +1,6 @@
 package com.meet.server.features.snippet.service;
 
+import com.meet.server.common.api.CountResponse;
 import com.meet.server.features.snippet.dto.CollectionDetailResponse;
 import com.meet.server.features.snippet.dto.CollectionResponse;
 import com.meet.server.features.snippet.dto.CreateCollectionRequest;
@@ -13,6 +14,9 @@ import com.meet.server.features.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,10 @@ public class CollectionService {
     private final SnippetService snippetService;
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "admin-dashboard", allEntries = true),
+            @CacheEvict(value = "collection-count", key = "#createdBy.id")
+    })
     public CollectionResponse createCollection(CreateCollectionRequest request, User createdBy) {
         Collection collection = new Collection();
         collection.setName(request.name());
@@ -118,9 +126,10 @@ public class CollectionService {
         return collectionRepository.countSnippetsById(id);
     }
 
-    public Long getCollectionCount(User createdBy) {
+    @Cacheable(value = "collection-count", key = "#createdBy.id")
+    public CountResponse getCollectionCount(User createdBy) {
         var spec = Specification.allOf(CollectionSpecification.isCreatedBy(createdBy));
-        return collectionRepository.count(spec);
+        return new CountResponse(collectionRepository.count(spec));
     }
 
     public Long getTotalCollectionCount() {

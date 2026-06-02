@@ -17,10 +17,10 @@ public class DashboardService {
     public DashboardStatResponse getDashboardStats(User user) {
         return DashboardStatResponse.builder()
                 .recentSnippets(snippetService.recentSnippets(user))
-                .totalSnippets(snippetService.getSnippetCount(user))
-                .favouriteCount(snippetService.getFavouriteCount(user))
+                .totalSnippets(snippetService.getSnippetCount(user).count())
+                .favouriteCount(snippetService.getFavouriteCount(user).count())
                 .byLanguage(snippetService.getLanguageCounts(user))
-                .totalCollections(collectionService.getCollectionCount(user))
+                .totalCollections(collectionService.getCollectionCount(user).count())
                 .build();
     }
 

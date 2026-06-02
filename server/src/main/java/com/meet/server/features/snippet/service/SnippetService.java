@@ -1,5 +1,6 @@
 package com.meet.server.features.snippet.service;
 
+import com.meet.server.common.api.CountResponse;
 import com.meet.server.common.api.PageResponse;
 import com.meet.server.features.dashboard.dto.LanguageCount;
 import com.meet.server.features.snippet.dto.*;
@@ -12,6 +13,9 @@ import com.meet.server.features.snippet.specification.SnippetSpecification;
 import com.meet.server.features.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,6 +39,12 @@ public class SnippetService {
     private final TagService tagService;
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "admin-dashboard", allEntries = true),
+            @CacheEvict(value = "language-counts", key = "#user.id"),
+            @CacheEvict(value = "snippet-count", key = "#user.id"),
+            @CacheEvict(value = "recent-snippets", key = "#user.id")
+    })
     public SnippetResponse createSnippet(CreateSnippetRequest request, User user) {
         log.debug("Create snippet request: title: {} desc : {}",
                 request.title(),
@@ -75,7 +86,7 @@ public class SnippetService {
         );
         var page = snippetRepository.findAll(spec, pageable);
         log.debug("Snippets found: {}", page.getNumberOfElements());
-        
+
         return new PageResponse<>(
                 page.getContent().stream().map(SnippetMapper::toDto).toList(),
                 page.getNumber(),
@@ -92,6 +103,10 @@ public class SnippetService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "language-counts", key = "#user.id"),
+            @CacheEvict(value = "snippet-count", key = "#user.id"),
+    })
     public SnippetResponse updateSnippet(String id, UpdateSnippetRequest request, User user) {
         Snippet existing = findActiveSnippet(Long.parseLong(id), user);
         log.debug("Update snippet: id={}, title={}", id, existing.getTitle());
@@ -112,6 +127,7 @@ public class SnippetService {
     }
 
     @Transactional
+    @CacheEvict(value = "favourite-count", key = "#user.id")
     public FavouriteResponse toggleFavourite(String id, User user) {
         Snippet snippet = findActiveSnippet(Long.parseLong(id), user);
         snippet.setFavorite(!snippet.isFavorite());
@@ -119,6 +135,13 @@ public class SnippetService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "admin-dashboard", allEntries = true),
+            @CacheEvict(value = "language-counts", key = "#user.id"),
+            @CacheEvict(value = "snippet-count", key = "#user.id"),
+            @CacheEvict(value = "favourite-count", key = "#user.id"),
+            @CacheEvict(value = "recent-snippets", key = "#user.id")
+    })
     public void deleteSnippet(Long id, User user) {
         Snippet snippet = findActiveSnippet(id, user);
         snippet.setDeleted(true);
@@ -139,6 +162,10 @@ public class SnippetService {
         return snippet;
     }
 
+    @Cacheable(
+            value = "recent-snippets",
+            key = "#user.id"
+    )
     public List<SnippetResponse> recentSnippets(User user) {
         var spec = Specification.allOf(
                 SnippetSpecification.isNotDeleted(),
@@ -155,28 +182,34 @@ public class SnippetService {
         return page.getContent()
                 .stream()
                 .map(SnippetMapper::toDto)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public Long getFavouriteCount(User user) {
+    @Cacheable(value = "favourite-count", key = "#user.id")
+    public CountResponse getFavouriteCount(User user) {
         var spec = Specification.allOf(
                 SnippetSpecification.isNotDeleted(),
                 SnippetSpecification.hasUser(user),
                 SnippetSpecification.isFavourite(true)
         );
 
-        return snippetRepository.count(spec);
+        return new CountResponse(snippetRepository.count(spec));
     }
 
-    public Long getSnippetCount(User user) {
+    @Cacheable(value = "snippet-count", key = "#user.id")
+    public CountResponse getSnippetCount(User user) {
         var spec = Specification.allOf(
                 SnippetSpecification.isNotDeleted(),
                 SnippetSpecification.hasUser(user)
         );
-
-        return snippetRepository.count(spec);
+        Long result = snippetRepository.count(spec);
+        return new CountResponse(result);
     }
 
+    @Cacheable(
+            value = "language-counts",
+            key = "#user.id"
+    )
     public List<LanguageCount> getLanguageCounts(User user) {
         return snippetRepository.getLanguageCounts(user.getId());
     }
