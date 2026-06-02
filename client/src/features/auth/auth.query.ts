@@ -1,7 +1,19 @@
 import { tokenStorage } from "#/api/token-storage";
 import { type QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { getCurrentUser, login, logout, register } from "./auth.api";
-import type { LoginRequest, RegisterRequest } from "./auth.type";
+import {
+	forgotPassword,
+	getCurrentUser,
+	login,
+	logout,
+	register,
+	resetPassword,
+} from "./auth.api";
+import type {
+	ForgotPasswordRequest,
+	LoginRequest,
+	RegisterRequest,
+	ResetPasswordRequest,
+} from "./auth.type";
 import { authKeys } from "./constant";
 
 export const useCurrentUser = () => {
@@ -43,6 +55,18 @@ export const useRegister = (queryClient: QueryClient) => {
 				queryKey: authKeys.me,
 			});
 		},
+	});
+};
+
+export const useForgotPassword = () => {
+	return useMutation({
+		mutationFn: (data: ForgotPasswordRequest) => forgotPassword(data),
+	});
+};
+
+export const useResetPassword = () => {
+	return useMutation({
+		mutationFn: (data: ResetPasswordRequest) => resetPassword(data),
 	});
 };
 

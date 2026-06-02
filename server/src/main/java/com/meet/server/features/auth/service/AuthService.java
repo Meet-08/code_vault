@@ -1,5 +1,6 @@
 package com.meet.server.features.auth.service;
 
+import com.meet.server.common.mail.MailService;
 import com.meet.server.common.security.jwt.JwtService;
 import com.meet.server.features.auth.dto.internal.TokenPair;
 import com.meet.server.features.auth.dto.request.LoginRequest;
@@ -20,6 +21,7 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     public TokenPair login(LoginRequest request) {
         User user;
@@ -44,6 +46,8 @@ public class AuthService {
                     request.email(),
                     passwordEncoder.encode(request.password())
             );
+
+            mailService.sendWelcomeEmail(user.getEmail(), user.getName());
         } catch (UserException e) {
             throw new AuthException(e.getMessage());
         }

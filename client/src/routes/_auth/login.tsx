@@ -18,6 +18,8 @@ import {
 import { Input } from "#/components/ui/input";
 import { useLogin } from "#/features/auth/auth.query";
 import { loginSchema, type LoginData } from "#/features/auth/auth.schema";
+import { AuthBrandMark } from "#/features/auth/components/auth-brand-mark";
+import { PasswordInput } from "#/features/auth/components/password-input";
 import { getContext } from "#/integrations/tanstack-query/root-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -55,17 +57,23 @@ function RouteComponent() {
 			},
 		});
 
-		navigate({ to: "/" });
+		navigate({ to: "/dashboard" });
 	};
 
 	return (
 		<Card className="overflow-hidden border-border-base/80 bg-[linear-gradient(180deg,rgba(17,19,24,0.98),rgba(14,16,20,0.98))] shadow-[0_24px_70px_rgba(0,0,0,0.35)]">
 			<CardHeader>
-				<div className="mb-2 inline-flex w-fit items-center rounded-full border border-border-strong bg-bg-subtle px-3 py-1 text-[11px] font-medium uppercase tracking-[0.24em] text-text-muted">
-					Welcome back
+				<div className="mb-3 flex items-center gap-3">
+					<AuthBrandMark />
+					<div>
+						<p className="text-xs font-medium uppercase tracking-[0.24em] text-text-muted">
+							Code Vault
+						</p>
+						<p className="text-sm text-text-secondary">Secure snippet access</p>
+					</div>
 				</div>
 				<CardTitle className="text-[clamp(1.75rem,2.4vw,2.25rem)] leading-tight">
-					Login
+					Welcome back
 				</CardTitle>
 				<CardDescription className="max-w-sm text-sm leading-relaxed text-text-secondary">
 					Enter your email and password to continue.
@@ -102,13 +110,20 @@ function RouteComponent() {
 							name="password"
 							render={({ field }) => (
 								<FormItem className="gap-2">
-									<FormLabel>Password</FormLabel>
+									<div className="flex items-center justify-between gap-3">
+										<FormLabel>Password</FormLabel>
+										<Link
+											to="/forgot-password"
+											className="auth-text-link text-xs"
+										>
+											Forgot password?
+										</Link>
+									</div>
 									<FormControl>
-										<Input
+										<PasswordInput
 											{...field}
-											type="password"
 											placeholder="Enter your password"
-											className="h-11 rounded-xl border-border-base/80 bg-bg-subtle/90 px-4"
+											className="h-11 rounded-xl border-border-base/80 bg-bg-subtle/90 px-4 pr-11"
 										/>
 									</FormControl>
 									<FormMessage />

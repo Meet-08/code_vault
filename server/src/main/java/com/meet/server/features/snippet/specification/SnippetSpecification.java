@@ -65,8 +65,10 @@ public class SnippetSpecification {
         };
     }
 
-    public static Specification<Snippet> isFavourite(boolean favourite) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("isFavorite"), favourite);
+    public static Specification<Snippet> isFavourite(Boolean favourite) {
+        return (root, query, criteriaBuilder) -> {
+            if (favourite == null) return null;
+            return criteriaBuilder.equal(root.get("isFavorite"), favourite);
+        };
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 public record SnippetFilterRequest(
         String q,
         List<String> tags,
-        String language
+        String language,
+        Boolean isFavourite
 ) {
 }

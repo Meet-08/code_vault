@@ -122,4 +122,8 @@ public class CollectionService {
         var spec = Specification.allOf(CollectionSpecification.isCreatedBy(createdBy));
         return collectionRepository.count(spec);
     }
+
+    public Long getTotalCollectionCount() {
+        return collectionRepository.count();
+    }
 }

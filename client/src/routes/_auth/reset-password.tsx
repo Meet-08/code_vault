@@ -1,5 +1,8 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import type { AxiosError } from "axios";
+import { KeyRound } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 import { Button } from "#/components/ui/button";
 import {
@@ -18,47 +21,59 @@ import {
 	FormLabel,
 	FormMessage,
 } from "#/components/ui/form";
-import { Input } from "#/components/ui/input";
-import { useRegister } from "#/features/auth/auth.query";
-import { registerSchema, type RegisterData } from "#/features/auth/auth.schema";
 import { AuthBrandMark } from "#/features/auth/components/auth-brand-mark";
 import { PasswordInput } from "#/features/auth/components/password-input";
-import { getContext } from "#/integrations/tanstack-query/root-provider";
+import { useResetPassword } from "#/features/auth/auth.query";
+import {
+	resetPasswordSchema,
+	type ResetPasswordData,
+} from "#/features/auth/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { AxiosError } from "axios";
-import { toast } from "react-toastify";
 import type { ApiResponse } from "../../..";
 
-export const Route = createFileRoute("/_auth/register")({
+export const Route = createFileRoute("/_auth/reset-password")({
+	validateSearch: (search) => ({
+		token: typeof search.token === "string" ? search.token : "",
+	}),
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const { queryClient } = getContext();
+	const { token } = Route.useSearch();
 	const navigate = useNavigate();
-	const registerMutation = useRegister(queryClient);
-	const form = useForm<RegisterData>({
-		resolver: zodResolver(registerSchema),
+	const resetPasswordMutation = useResetPassword();
+	const form = useForm<ResetPasswordData>({
+		resolver: zodResolver(resetPasswordSchema),
 		defaultValues: {
-			name: "",
-			email: "",
-			password: "",
+			newPassword: "",
 		},
 	});
 
-	const onSubmit = async (data: RegisterData) => {
-		await toast.promise(registerMutation.mutateAsync(data), {
-			pending: "Creating your account...",
-			success: "Account created successfully",
-			error: {
-				render({ data }) {
-					const error = data as AxiosError<ApiResponse>;
+	const onSubmit = async (data: ResetPasswordData) => {
+		if (!token) {
+			toast.error("Password reset token is missing.");
+			return;
+		}
 
-					return error.response?.data?.message || "Registration failed";
+		await toast.promise(
+			resetPasswordMutation.mutateAsync({
+				token,
+				newPassword: data.newPassword,
+			}),
+			{
+				pending: "Resetting password...",
+				success: "Password reset successfully. Please log in.",
+				error: {
+					render({ data }) {
+						const error = data as AxiosError<ApiResponse>;
+
+						return error.response?.data?.message || "Password reset failed";
+					},
 				},
 			},
-		});
-		navigate({ to: "/dashboard" });
+		);
+
+		navigate({ to: "/login" });
 	};
 
 	return (
@@ -70,18 +85,25 @@ function RouteComponent() {
 						<p className="text-xs font-medium uppercase tracking-[0.24em] text-text-muted">
 							Code Vault
 						</p>
-						<p className="text-sm text-text-secondary">Personal code library</p>
+						<p className="text-sm text-text-secondary">New password setup</p>
 					</div>
 				</div>
 				<CardTitle className="text-[clamp(1.75rem,2.4vw,2.25rem)] leading-tight">
-					Create account
+					Reset password
 				</CardTitle>
 				<CardDescription className="max-w-sm text-sm leading-relaxed text-text-secondary">
-					Create your account with your name, email, and password.
+					Choose a new password for your Code Vault account.
 				</CardDescription>
 			</CardHeader>
 
 			<CardContent className="pt-2">
+				{!token ? (
+					<div className="mb-4 rounded-xl border border-danger-base/50 bg-danger-subtle px-4 py-3 text-sm text-danger-text">
+						This reset link is missing a token. Request a new password reset
+						link to continue.
+					</div>
+				) : null}
+
 				<Form {...form}>
 					<form
 						className="auth-field-grid"
@@ -89,52 +111,14 @@ function RouteComponent() {
 					>
 						<FormField
 							control={form.control}
-							name="name"
+							name="newPassword"
 							render={({ field }) => (
 								<FormItem className="gap-2">
-									<FormLabel>Name</FormLabel>
-									<FormControl>
-										<Input
-											{...field}
-											type="text"
-											placeholder="Your name"
-											className="h-11 rounded-xl border-border-base/80 bg-bg-subtle/90 px-4"
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name="email"
-							render={({ field }) => (
-								<FormItem className="gap-2">
-									<FormLabel>Email</FormLabel>
-									<FormControl>
-										<Input
-											{...field}
-											type="email"
-											placeholder="you@example.com"
-											className="h-11 rounded-xl border-border-base/80 bg-bg-subtle/90 px-4"
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name="password"
-							render={({ field }) => (
-								<FormItem className="gap-2">
-									<FormLabel>Password</FormLabel>
+									<FormLabel>New password</FormLabel>
 									<FormControl>
 										<PasswordInput
 											{...field}
-											placeholder="Create a password"
+											placeholder="Create a new password"
 											className="h-11 rounded-xl border-border-base/80 bg-bg-subtle/90 px-4 pr-11"
 										/>
 									</FormControl>
@@ -145,9 +129,11 @@ function RouteComponent() {
 
 						<Button
 							type="submit"
+							disabled={resetPasswordMutation.isPending || !token}
 							className="mt-3 h-11 w-full rounded-xl text-sm shadow-[0_12px_30px_rgba(43,135,245,0.28)]"
 						>
-							Create account
+							<KeyRound className="size-4" />
+							Reset password
 						</Button>
 					</form>
 				</Form>
@@ -155,7 +141,7 @@ function RouteComponent() {
 
 			<CardFooter className="justify-center border-t border-border-base/80 bg-bg-subtle/40 py-5 text-sm text-text-secondary">
 				<div>
-					Already have an account?{" "}
+					Remembered your password?{" "}
 					<Link to="/login" className="auth-text-link">
 						Login
 					</Link>

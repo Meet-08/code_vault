@@ -69,7 +69,8 @@ public class SnippetService {
                 Specification.anyOf(
                         SnippetSpecification.containsQuery(request.q()),
                         SnippetSpecification.hasLanguage(request.language()),
-                        SnippetSpecification.hasTags(request.tags())
+                        SnippetSpecification.hasTags(request.tags()),
+                        SnippetSpecification.isFavourite(request.isFavourite())
                 )
         );
         var page = snippetRepository.findAll(spec, pageable);
@@ -178,5 +179,11 @@ public class SnippetService {
 
     public List<LanguageCount> getLanguageCounts(User user) {
         return snippetRepository.getLanguageCounts(user.getId());
+    }
+
+    public Long getTotalSnippetCount() {
+        return snippetRepository.count(
+                SnippetSpecification.isNotDeleted()
+        );
     }
 }
