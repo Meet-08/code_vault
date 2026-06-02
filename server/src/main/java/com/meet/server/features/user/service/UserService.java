@@ -1,6 +1,8 @@
 package com.meet.server.features.user.service;
 
+import com.meet.server.common.api.PageResponse;
 import com.meet.server.common.util.SecurityUtils;
+import com.meet.server.features.admin.dto.AdminUserResponse;
 import com.meet.server.features.user.dto.request.AssignRolesRequest;
 import com.meet.server.features.user.dto.response.UserResponse;
 import com.meet.server.features.user.enums.UserRole;
@@ -8,6 +10,7 @@ import com.meet.server.features.user.exception.UserException;
 import com.meet.server.features.user.model.User;
 import com.meet.server.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,12 +77,39 @@ public class UserService {
         return toResponse(userRepository.save(user));
     }
 
+    public PageResponse<AdminUserResponse> getUsers(String q, Pageable pageable) {
+        var userPage = userRepository.search(q, pageable);
+        var user = userPage.getContent().stream()
+                .map(this::toAdminResponse)
+                .toList();
+        return new PageResponse<>(
+                user,
+                userPage.getNumber(),
+                userPage.getSize(),
+                userPage.getTotalElements(),
+                userPage.getTotalPages(),
+                userPage.isLast()
+        );
+    }
+
+    public Long countUsers() {
+        return userRepository.count();
+    }
+
     private UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getName(),
                 user.getRoles().stream().map(Enum::name).collect(Collectors.toList())
+        );
+    }
+
+    private AdminUserResponse toAdminResponse(User user) {
+        return new AdminUserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
         );
     }
 }

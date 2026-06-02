@@ -3,7 +3,7 @@ import { Card, CardContent } from "#/components/ui/card";
 import { Input } from "#/components/ui/input";
 import { Loader } from "#/components/ui/loader";
 import { SnippetListView } from "#/features/snippet/components/snippet-list";
-import { snippetTagOptions } from "#/features/snippet/constant";
+import { SnippetTagFilter } from "#/features/snippet/components/snippet-tag-filter";
 import { useSnippetQuery } from "#/features/snippet/snippet.query";
 import { snippetSearchSchema } from "#/features/snippet/snippet.schema";
 import {
@@ -216,27 +216,10 @@ function SnippetsIndexPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <div className="text-sm font-medium text-text-primary">Tags</div>
-              <div className="flex flex-wrap gap-2">
-                {snippetTagOptions.map((option) => {
-                  const isSelected = selectedTags.includes(option.value);
-
-                  return (
-                    <Button
-                      key={option.value}
-                      type="button"
-                      variant={isSelected ? "default" : "outline"}
-                      size="sm"
-                      className="rounded-full"
-                      onClick={() => toggleTag(option.value)}
-                    >
-                      {option.label}
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
+            <SnippetTagFilter
+              selectedTags={selectedTags}
+              onToggleTag={toggleTag}
+            />
 
             <div className="space-y-2">
               <div className="text-sm font-medium text-text-primary">

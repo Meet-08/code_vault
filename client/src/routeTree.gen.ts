@@ -17,11 +17,14 @@ import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppAdminRouteRouteImport } from './routes/_app/admin/route'
 import { Route as AppSnippetsIndexRouteImport } from './routes/_app/snippets/index'
 import { Route as AppCollectionsIndexRouteImport } from './routes/_app/collections/index'
 import { Route as AppSnippetsNewRouteImport } from './routes/_app/snippets/new'
 import { Route as AppSnippetsIdRouteImport } from './routes/_app/snippets/$id'
 import { Route as AppCollectionsIdRouteImport } from './routes/_app/collections/$id'
+import { Route as AppAdminUsersRouteImport } from './routes/_app/admin/users'
+import { Route as AppAdminDashboardRouteImport } from './routes/_app/admin/dashboard'
 import { Route as AppSnippetsIdEditRouteImport } from './routes/_app/snippets/$id.edit'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
@@ -62,6 +65,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppAdminRouteRoute = AppAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppSnippetsIndexRoute = AppSnippetsIndexRouteImport.update({
   id: '/snippets/',
   path: '/snippets/',
@@ -87,6 +95,16 @@ const AppCollectionsIdRoute = AppCollectionsIdRouteImport.update({
   path: '/collections/$id',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppAdminUsersRoute = AppAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppAdminRouteRoute,
+} as any)
+const AppAdminDashboardRoute = AppAdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppAdminRouteRoute,
+} as any)
 const AppSnippetsIdEditRoute = AppSnippetsIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -95,11 +113,14 @@ const AppSnippetsIdEditRoute = AppSnippetsIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AppAdminRouteRouteWithChildren
   '/dashboard': typeof AppDashboardRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/admin/dashboard': typeof AppAdminDashboardRoute
+  '/admin/users': typeof AppAdminUsersRoute
   '/collections/$id': typeof AppCollectionsIdRoute
   '/snippets/$id': typeof AppSnippetsIdRouteWithChildren
   '/snippets/new': typeof AppSnippetsNewRoute
@@ -109,11 +130,14 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AppAdminRouteRouteWithChildren
   '/dashboard': typeof AppDashboardRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/admin/dashboard': typeof AppAdminDashboardRoute
+  '/admin/users': typeof AppAdminUsersRoute
   '/collections/$id': typeof AppCollectionsIdRoute
   '/snippets/$id': typeof AppSnippetsIdRouteWithChildren
   '/snippets/new': typeof AppSnippetsNewRoute
@@ -126,11 +150,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
+  '/_app/admin': typeof AppAdminRouteRouteWithChildren
   '/_app/dashboard': typeof AppDashboardRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/_app/admin/dashboard': typeof AppAdminDashboardRoute
+  '/_app/admin/users': typeof AppAdminUsersRoute
   '/_app/collections/$id': typeof AppCollectionsIdRoute
   '/_app/snippets/$id': typeof AppSnippetsIdRouteWithChildren
   '/_app/snippets/new': typeof AppSnippetsNewRoute
@@ -142,11 +169,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/forgot-password'
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/admin/dashboard'
+    | '/admin/users'
     | '/collections/$id'
     | '/snippets/$id'
     | '/snippets/new'
@@ -156,11 +186,14 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/forgot-password'
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/admin/dashboard'
+    | '/admin/users'
     | '/collections/$id'
     | '/snippets/$id'
     | '/snippets/new'
@@ -172,11 +205,14 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/_auth'
+    | '/_app/admin'
     | '/_app/dashboard'
     | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/register'
     | '/_auth/reset-password'
+    | '/_app/admin/dashboard'
+    | '/_app/admin/users'
     | '/_app/collections/$id'
     | '/_app/snippets/$id'
     | '/_app/snippets/new'
@@ -249,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/admin': {
+      id: '/_app/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AppAdminRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/snippets/': {
       id: '/_app/snippets/'
       path: '/snippets'
@@ -284,6 +327,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCollectionsIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/admin/users': {
+      id: '/_app/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AppAdminUsersRouteImport
+      parentRoute: typeof AppAdminRouteRoute
+    }
+    '/_app/admin/dashboard': {
+      id: '/_app/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AppAdminDashboardRouteImport
+      parentRoute: typeof AppAdminRouteRoute
+    }
     '/_app/snippets/$id/edit': {
       id: '/_app/snippets/$id/edit'
       path: '/edit'
@@ -293,6 +350,20 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AppAdminRouteRouteChildren {
+  AppAdminDashboardRoute: typeof AppAdminDashboardRoute
+  AppAdminUsersRoute: typeof AppAdminUsersRoute
+}
+
+const AppAdminRouteRouteChildren: AppAdminRouteRouteChildren = {
+  AppAdminDashboardRoute: AppAdminDashboardRoute,
+  AppAdminUsersRoute: AppAdminUsersRoute,
+}
+
+const AppAdminRouteRouteWithChildren = AppAdminRouteRoute._addFileChildren(
+  AppAdminRouteRouteChildren,
+)
 
 interface AppSnippetsIdRouteChildren {
   AppSnippetsIdEditRoute: typeof AppSnippetsIdEditRoute
@@ -307,6 +378,7 @@ const AppSnippetsIdRouteWithChildren = AppSnippetsIdRoute._addFileChildren(
 )
 
 interface AppRouteRouteChildren {
+  AppAdminRouteRoute: typeof AppAdminRouteRouteWithChildren
   AppDashboardRoute: typeof AppDashboardRoute
   AppCollectionsIdRoute: typeof AppCollectionsIdRoute
   AppSnippetsIdRoute: typeof AppSnippetsIdRouteWithChildren
@@ -316,6 +388,7 @@ interface AppRouteRouteChildren {
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppAdminRouteRoute: AppAdminRouteRouteWithChildren,
   AppDashboardRoute: AppDashboardRoute,
   AppCollectionsIdRoute: AppCollectionsIdRoute,
   AppSnippetsIdRoute: AppSnippetsIdRouteWithChildren,

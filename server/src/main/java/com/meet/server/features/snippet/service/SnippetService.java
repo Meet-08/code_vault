@@ -75,7 +75,7 @@ public class SnippetService {
         );
         var page = snippetRepository.findAll(spec, pageable);
         log.debug("Snippets found: {}", page.getNumberOfElements());
-
+        
         return new PageResponse<>(
                 page.getContent().stream().map(SnippetMapper::toDto).toList(),
                 page.getNumber(),

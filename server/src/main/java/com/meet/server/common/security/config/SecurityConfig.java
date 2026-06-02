@@ -54,6 +54,7 @@ public class SecurityConfig {
                                 "/api/auth/reset-password",
                                 "/v3/api-docs",
                                 "/swagger-ui/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
