@@ -5,7 +5,12 @@ import type { ApiResponse } from "../..";
 
 import { tokenStorage } from "./token-storage";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const isServer = typeof window === "undefined";
+const API_BASE_URL = isServer
+	? (typeof process !== "undefined" && process.env.INTERNAL_API_URL
+		? process.env.INTERNAL_API_URL
+		: "http://backend:8080/api")
+	: (import.meta.env.VITE_API_BASE_URL || "/api");
 
 export const api = axios.create({
 	baseURL: API_BASE_URL,
