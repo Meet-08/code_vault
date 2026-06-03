@@ -1,0 +1,22 @@
+auth:
+  username: MeetBhuva
+  database: code-vault
+
+  existingSecret: postgres-secret
+
+  secretKeys:
+    adminPasswordKey: postgres-password
+    userPasswordKey: password
+
+primary:
+  persistence:
+    enabled: true
+    size: 5Gi
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+
+service:
+  type: ClusterIP
