@@ -1,8 +1,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
+
 metadata:
-  name: code-vault
-  namespace: code-vault
+  name: argocd-ingress
+  namespace: argocd
 
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -16,24 +17,13 @@ spec:
   ingressClassName: alb
 
   rules:
-    - host: codevault.meet-08.me
-
+    - host: argocd.meet-08.me
       http:
         paths:
           - path: /
             pathType: Prefix
-
             backend:
               service:
-                name: frontend
+                name: argocd-server
                 port:
-                  number: 3000
-
-          - path: /api
-            pathType: Prefix
-
-            backend:
-              service:
-                name: backend
-                port:
-                  number: 8080
+                  number: 80

@@ -39,7 +39,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - secretRef:
-                name: {{ include "backend.fullname" . }}-secret
+                name: backend-secret
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
