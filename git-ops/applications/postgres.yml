@@ -7,10 +7,18 @@ metadata:
 spec:
   project: default
 
-  source:
-    repoURL: https://github.com/Meet-08/code_vault.git
-    targetRevision: HEAD
-    path: git-ops/charts/postgres
+  sources:
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: postgresql
+      targetRevision: 18
+
+      helm:
+        valueFiles:
+          - $values/git-ops/charts/postgres/values.yaml
+
+    - repoURL: https://github.com/Meet-08/code_vault.git
+      targetRevision: HEAD
+      ref: values
 
   destination:
     server: https://kubernetes.default.svc

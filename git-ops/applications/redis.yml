@@ -7,10 +7,18 @@ metadata:
 spec:
   project: default
 
-  source:
-    repoURL: https://github.com/Meet-08/code_vault.git
-    targetRevision: HEAD
-    path: git-ops/charts/redis
+  sources:
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: redis
+      targetRevision: 21.2.4
+
+      helm:
+        valueFiles:
+          - $values/git-ops/charts/redis/values.yaml
+
+    - repoURL: https://github.com/Meet-08/code_vault.git
+      targetRevision: HEAD
+      ref: values
 
   destination:
     server: https://kubernetes.default.svc
